@@ -4,7 +4,7 @@
 
 ## Assignment 1
 
-I learned a lot about Git and the different features I will be learning more about and using in this CS class. I had to work through a couple things on my computer but it was pretty fun and interesting to figure out.
+I learned a lot about Git and the different features I will be learning more about and using in this CS class. I learned how to use Git from the command line and also VS Code, which should be handy in the future to be able to push and pull. I had to work through a couple things on my computer but it was pretty fun and interesting to figure out.
 
 ## Helpful links
 
