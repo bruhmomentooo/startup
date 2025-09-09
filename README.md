@@ -6,10 +6,6 @@ This will be my startup description in the future!
 
 ## Specification Deliverable
 
-# Elevator Pitch
-
-Do you ever feel lost or overwhelmed with the amount of activities that you have to do and accomplish? Have you ever forgotten when you last changed your oil or fertilized your lawn? With the new Task Tracker app you can easily remember, track and manage the time table of the tasks that you need to complete.
-
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [ ] Proper use of Markdown
@@ -20,7 +16,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ### Elevator pitch
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Do you ever feel overwhelmed with the amount of activities that you have to accomplish? Maybe you've even forgotten when you last changed your oil or fertilized your lawn. That's where the new Task Tracker app comes in, helping you easily remember, track, and manage everything that you need to do. By keeping track of recurring events, the app helps reduce the stress of remembering them on your own. Each time a task is completed, it can be simply checked off, and the app will record the date and time for easy reference. The app also offers customizable reminders, ensuring you never forget an important task again.
 
 ### Design
 
