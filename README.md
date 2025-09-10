@@ -34,6 +34,7 @@ Pictured above and to the right of the white board is the diagram of how users w
 - Removing tasks
 - Marking off tasks and storing date/task completion
 - Ability to receive notifications when a task is due
+- Ability to add tasks to Google Calendar
 - Set recurring task date
 - Tells the frequency of each task
 
@@ -52,7 +53,7 @@ I am going to use the required technologies in the following ways:
 - **Service** - Backend service with endpoints for:
      * retrieving task information (task name, dates, frequency)
      * sumbitting tasks
-     * 
+     * ability to connect with Google calendar [Google Calendar API](https://developers.google.com/workspace/calendar/api/guides/overview).
      * register, login and logout users. Credentials securely stored in database.
 - **DB/Login** - Store authentication information, users, tasks, and dates in the database.
 - **WebSocket** - Notifications from the database for when a task is due.
