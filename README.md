@@ -12,7 +12,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] A concise and compelling elevator pitch
 - [ ] Description of key features
 - [ ] Description of how you will use each technology
-- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
+- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ### Elevator pitch
 
@@ -27,15 +27,26 @@ Pictured above and to the right of the white board is the diagram of how users w
 
 ### Key features
 
-- Describe your key feature
-- Describe your key feature
-- Describe your key feature
+- Account creation and storing login information
+- Secure login over HTTPS
+- Creation of tasks in realtime
+- Editing tasks
+- Removing tasks
+- Marking off tasks and storing date/task completion
+- Ability to receive notifications when a task is due
+- Set recurring task date
+- Tells the frequency of each task
 
 ### Technologies
 
-I am going to use the required technologies in the following ways.
+I am going to use the required technologies in the following ways:
 
-- **HTML** - Description here
+- **HTML** - Uses correct HTML structure for application. Two HTML pages with three additional pop-up screens. Included:
+    * Login page
+    * Task tracker main page
+        - Task creation pop-up
+        - Task editor pop-up
+        - Notifications pop-up
 - **CSS** - Description here
 - **React** - Description here
 - **Service** - Description here
