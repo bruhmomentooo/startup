@@ -23,7 +23,7 @@ Do you ever feel overwhelmed with the amount of activities that you have to acco
 ![tasktrackerdiagram](https://github.com/user-attachments/assets/e954c184-6c8d-4cb8-bb70-f4e9e5786224)
 
 
-Pictured above and to the right of the white board is the diagram of how users will be able to use the app, and also how their login and task information and data is stored. To the left is the basic web interface that users will come into contact with. It displays how the app will function and all the different features.
+Pictured above and to the left of the white board is the diagram of how users will be able to use the app, and also how their login and task information and data is stored. To the right is the basic web interface that users will come into contact with. It displays how the app will function and all the different features.
 
 ### Key features
 
