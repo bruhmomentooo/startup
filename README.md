@@ -2,13 +2,13 @@
 
 [My Notes](notes.md)
 
-This will be my startup description in the future!
+Task tracker is built for those who often forget tasks or activities that need to be fulfilled or for the sake of remembering when that activity was performed. It will keep track of those dates that tasks have been completed for future reference and to provide a frequency of how often a task is performed.
 
 ## 🚀 Specification Deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] Proper use of Markdown
+- [x] Proper use of Markdown
 - [x] A concise and compelling elevator pitch
 - [ ] Description of key features
 - [ ] Description of how you will use each technology
@@ -16,20 +16,14 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ### Elevator pitch
 
-Do you ever feel overwhelmed with the amount of activities that you have to accomplish? Maybe you've even forgotten when you last changed your oil or fertilized your lawn. That's where the new Task Tracker app comes in, helping you easily remember, track, and manage everything that you need to do. By keeping track of recurring events, the app helps reduce the stress of remembering them on your own. Each time a task is completed, it can be simply checked off, and the app will record the date and time for easy reference. The app also offers customizable reminders, ensuring you never forget an important task again.
+Do you ever feel overwhelmed with the amount of activities that you have to accomplish? Maybe you've even forgotten when you last changed your oil or fertilized your lawn. That's where the new Task Tracker app comes in, helping you easily remember, track, and manage everything that you need to do. By keeping track of recurring and reoccuring events, the app helps reduce the stress of remembering them on your own. Each time a task is completed, it can be simply checked off, and the app will record the date and time for easy reference. The app also offers customizable reminders, ensuring you never forget an important task again.
 
 ### Design
 
-![Design image](placeholder.png)
+![tasktrackerdiagram](https://github.com/user-attachments/assets/e954c184-6c8d-4cb8-bb70-f4e9e5786224)
 
-Here is the basic GUI and sequence diagram that shows how the app will function and use all the different features.
 
-```mermaid
-sequenceDiagram
-    actor You
-    actor Website
-    You->>Website: Replace this with your design
-```
+Pictured above and to the right of the white board is the diagram of how users will be able to use the app, and also how their login and task information and data is stored. To the left is the basic web interface that users will come into contact with. It displays how the app will function and all the different features.
 
 ### Key features
 
