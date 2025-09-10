@@ -47,11 +47,15 @@ I am going to use the required technologies in the following ways:
         - Task creation pop-up
         - Task editor pop-up
         - Notifications pop-up
-- **CSS** - Description here
-- **React** - Description here
-- **Service** - Description here
-- **DB/Login** - Description here
-- **WebSocket** - Description here
+- **CSS** - Application styling with photos, good whitespace, color and contrast.
+- **React** - Provides login and account creation, new task creation and editing, backend endpoint calls.
+- **Service** - Backend service with endpoints for:
+     * retrieving task information (task name, dates, frequency)
+     * sumbitting tasks
+     * 
+     * register, login and logout users. Credentials securely stored in database.
+- **DB/Login** - Store authentication information, users, tasks, and dates in the database.
+- **WebSocket** - Notifications from the database for when a task is due.
 
 ## 🚀 AWS deliverable
 
