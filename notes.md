@@ -26,7 +26,8 @@ WIP
 
 ## CSS
 
-WIP
+![https___dev-to-uploads s3 amazonaws com_uploads_articles_18sfy7anxl7uj5soub2i](https://github.com/user-attachments/assets/cb614a2f-9cb0-409b-a592-9f9567ae90c2)
+
 
 ## React Part 1: Routing
 
