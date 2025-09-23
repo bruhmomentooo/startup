@@ -11,26 +11,33 @@
             <h1>Task Tracker App</h1>
             <nav>
                 <a href="home.html">Home</a> |
+                <a href="tasks.html">Tasks</a> |
                 <a href="about.html">About</a> |
                 <a href="index.html">Logout</a>
             </nav>
+            <hr />
         </header>
         <main>
             <div class="container">
                 <h1>Welcome!</h1>
-                <form>
+                <form method="get" action="home.html">
                     <label for="email">Email</label>
-                    <input type="text" id="email" name="email" required>
+                    <input type="text" id="email" name="email" required placeholder="example@gmail.com">
 
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-
-                    <button type="submit">Login</button>
+                    <input type="password" id="password" name="password" required placeholder="password">
+                    <div>
+                        <button type="submit">Login</button>
+                        <button type="submit">Create Account</button>
+                    </div>
                 </form>
             </div>
         </main>
         <footer>
-            
+            <hr />
+            <span class="text-reset">Author Name(s)</span>
+            <br />
+            <a href="https://github.com/bruhmomentooo/startup.git">GitHub</a>
         </footer>
     </body>
 </html>
