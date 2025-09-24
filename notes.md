@@ -22,7 +22,7 @@ WIP
 
 ## HTML
 
-WIP
+It is important to have navigation links between the pages and to think like the user when designing the website structure. You want to always test the edge cases and desgin each piece and bit carefully and plan how to use each thing in the future.
 
 ## CSS
 
