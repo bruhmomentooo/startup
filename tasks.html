@@ -18,9 +18,41 @@
             <hr />
         </header>
         <main>
+            <div class="container" id="taskButtons">
+                <menu>
+                    <li><button type="get">Create</button></li> 
+                    <li><button type="get">Select/Edit</button></li>
+                    <li><button type="get">Add to Google Calendar</button></li> <!-- call to third party service api -->
+                    <li><button type="get">Notifications</button></li> <!-- web socket implementation-->
+                </menu>
+            </div>
+            </h3>All Tasks</h3>
             <div class="container">
-                <h1>Welcome to the Task Tracker App!</h1>
-                <p>This is your home page. Use the navigation links above to explore the app.</p>
+                <button type="get">Sort</button>
+                <button type="get">Filter</button>
+                <button type="get">Search</button>
+                <table id="allTasks">
+                    <tr>
+                        <td>
+                            <label for="checkbox1">Task 1</label> <input type="checkbox" name="varCheckbox" value="checkbox1" />
+                            <button type="get">View</button> <!-- displays time and date of previous tasks completed -->
+                            <button type="get">Edit</button> <!-- edit task and also will have the option to delete (this will also be a pop up for each task) -->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="checkbox2">Task 2</label> <input type="checkbox" name="varCheckbox" value="checkbox2" />
+                            <button type="get">View</button>
+                            <button type="get">Edit</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="checkbox3">Task 3</label> <input type="checkbox" name="varCheckbox" value="checkbox3" />
+                            <button type="get">View</button>
+                            <button type="get">Edit</button>
+                        </td>
+                    </tr>
             </div>
         </main>
         <footer>
