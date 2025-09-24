@@ -68,15 +68,15 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **HTML pages** - I did not complete this part of the deliverable.
-- [ ] **Proper HTML element usage** - I did not complete this part of the deliverable.
-- [ ] **Links** - I did not complete this part of the deliverable.
-- [ ] **Text** - I did not complete this part of the deliverable.
-- [ ] **3rd party API placeholder** - I did not complete this part of the deliverable.
-- [ ] **Images** - I did not complete this part of the deliverable.
-- [ ] **Login placeholder** - I did not complete this part of the deliverable.
-- [ ] **DB data placeholder** - I did not complete this part of the deliverable.
-- [ ] **WebSocket placeholder** - I did not complete this part of the deliverable.
+- [x] **HTML pages** - I created three HTML pages which include a login page, home page and an all tasks page.
+- [x] **Proper HTML element usage** - I followed the proper HTML structure for all three pages.
+- [x] **Links** - I have navigation links in the header of all three that go between.
+- [x] **Text** - There is text on each of my webpages.
+- [x] **3rd party API placeholder** - There is a specific button for the Google Calendar API and there will be another place that holds it as well in a pop up page.
+- [x] **Images** - There is an image of a logo at the top of easch page in the header.
+- [x] **Login placeholder** - There is a place to login to access the website.
+- [x] **DB data placeholder** - All of the tasks are placeholders for the users calls to the database and account.
+- [x] **WebSocket placeholder** - The notification button is where the websocket will interact with the user.
 
 ## 🚀 CSS deliverable
 
