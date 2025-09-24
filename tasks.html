@@ -26,22 +26,40 @@
                     <li><button type="get">Notifications</button></li> <!-- web socket implementation-->
                 </menu>
             </div>
-            </h3>All Tasks</h3>
-            <div class="container">
+            <h3>All Tasks</h3>
+            <div class="container" id="sortFunctions">
                 <button type="get">Sort</button>
                 <button type="get">Filter</button>
                 <button type="get">Search</button>
+            </div>
+            <div class="container" id="taskList">
                 <table id="allTasks">
                     <tr>
                         <td>
                             <label for="checkbox1">Task 1</label> <input type="checkbox" name="varCheckbox" value="checkbox1" />
-                            <button type="get">View</button> <!-- displays time and date of previous tasks completed -->
-                            <button type="get">Edit</button> <!-- edit task and also will have the option to delete (this will also be a pop up for each task) -->
+                        </td>
+                        <td>
+                            <p>Task details...</p>
+                        </td>
+                        <td>
+                            <p><i>Last Completed: Sept. 20, 2025</i></p>
+                        </td>
+                        <td>
+                            <button type="get">View</button>
+                            <button type="get">Edit</button>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <label for="checkbox2">Task 2</label> <input type="checkbox" name="varCheckbox" value="checkbox2" />
+                        </td>
+                        <td>
+                            <p>Task details...</p>
+                        </td>
+                        <td>
+                            <p><i>Last Completed: Mar. 17, 2023</i></p>
+                        </td>
+                        <td>
                             <button type="get">View</button>
                             <button type="get">Edit</button>
                         </td>
@@ -49,6 +67,14 @@
                     <tr>
                         <td>
                             <label for="checkbox3">Task 3</label> <input type="checkbox" name="varCheckbox" value="checkbox3" />
+                        </td>
+                        <td>
+                            <p>Task details...</p>
+                        </td>
+                        <td>
+                            <p><i>Last Completed: Dec. 12, 2024</i></p>
+                        </td>
+                        <td>
                             <button type="get">View</button>
                             <button type="get">Edit</button>
                         </td>
