@@ -28,32 +28,28 @@
                     <li><button type="get">Notifications</button></li> <!-- web socket implementation-->
                 </menu>
             </div>
-            <h3>Recurring Tasks</h3>
-            <div class="container"> <!-- calls to database to get information -->
-                <table id="recurringTasks">
-                    <tr>
-                        <td>
-                            <label for="checkbox1">Task 1</label> <input type="checkbox" name="varCheckbox" value="checkbox1" />
-                            <button type="get">View</button> <!-- displays time and date of previous tasks completed and when the next one is due (it will be a pop up) -->
-                            <button type="get">Edit</button> <!-- edit recurrence and also will have the option to delete (this will also be a pop up for each task) -->
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="checkbox2">Task 2</label> <input type="checkbox" name="varCheckbox" value="checkbox2" />
-                            <button type="get">View</button>
-                            <button type="get">Edit</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="checkbox3">Task 3</label> <input type="checkbox" name="varCheckbox" value="checkbox3" />
-                            <button type="get">View</button>
-                            <button type="get">Edit</button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+
+            <h3>Recurring Tasks</h3><!-- calls to database to get information -->
+                <div class="task_container">
+                    <div class="task">
+                        <input type="checkbox" id="recurring1" />
+                        <label for="recurring1">Task 1</label>
+                        <button type="button">View</button>
+                        <button type="button">Edit</button>
+                    </div>
+                    <div class="task">
+                        <input type="checkbox" id="recurring2" />
+                        <label for="recurring2">Task 2</label>
+                        <button type="button">View</button>
+                        <button type="button">Edit</button>
+                    </div>
+                    <div class="task">
+                        <input type="checkbox" id="recurring3" />
+                        <label for="recurring3">Task 3</label>
+                        <button type="button">View</button>
+                        <button type="button">Edit</button>
+                    </div>
+                </div>
             <hr />
             <div class="container">
                 <h3>All Tasks</h3>
