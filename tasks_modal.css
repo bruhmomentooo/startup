@@ -33,4 +33,24 @@ body {
       animation: fadeIn 0.3s ease;
     }
 
+    /* Close Button (X) */
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #555;
+    }
+    .close:hover {
+      color: black;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     
