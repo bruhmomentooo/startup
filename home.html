@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Home - Task Tracker App</title>
         <link rel="icon" href="tasktrackerappicon.png" />
-        <link rel="stylesheet" href="style.css">
+        <!--<link rel="stylesheet" href="style.css">-->
     </head>
     <body class="home-page">
         <header>
@@ -30,7 +30,7 @@
             </div>
 
             <h3>Recurring Tasks</h3><!-- calls to database to get information -->
-                <div class="task_container">
+                <div class="task_container" id="recurringTasks">
                     <div class="task">
                         <input type="checkbox" id="recurring1" />
                         <label for="recurring1">Task 1</label>
@@ -51,31 +51,28 @@
                     </div>
                 </div>
             <hr />
-            <div class="container">
-                <h3>All Tasks</h3>
-                <table id="allTasks">
-                    <tr>
-                        <td>
-                            <label for="checkbox1">Task 1</label> <input type="checkbox" name="varCheckbox" value="checkbox1" />
-                            <button type="get">View</button> <!-- displays time and date of previous tasks completed -->
-                            <button type="get">Edit</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="checkbox2">Task 2</label> <input type="checkbox" name="varCheckbox" value="checkbox2" />
-                            <button type="get">View</button>
-                            <button type="get">Edit</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="checkbox3">Task 3</label> <input type="checkbox" name="varCheckbox" value="checkbox3" />
-                            <button type="get">View</button>
-                            <button type="get">Edit</button>
-                        </td>
-                    </tr>
-                </table>
+            
+            <h3>All Tasks</h3>
+            <div class="task_container" id="allTasks">
+                <div class="task">
+                    <input type="checkbox" id="all1" />
+                    <label for="all1">Task 1</label>
+                    <button type="button">View</button>
+                    <button type="button">Edit</button>
+                </div>
+                <div class="task">
+                    <input type="checkbox" id="all2" />
+                    <label for="all2">Task 2</label>
+                    <button type="button">View</button>
+                    <button type="button">Edit</button>
+                </div>
+                <div class="task">
+                    <input type="checkbox" id="all3" />
+                    <label for="all3">Task 3</label>
+                    <button type="button">View</button>
+                    <button type="button">Edit</button>
+                </div>
+            </div>
         </main>
         <footer>
             <hr />
