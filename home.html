@@ -30,12 +30,12 @@
             </div>
 
             <h3>Recurring Tasks</h3><!-- calls to database to get information -->
-                <div class="task_container" id="recurringTasks">
+                <div class="task_container" id="recurringTasks" link rel="stylesheet" href="tasks_modal.css" src="tasks_modal.js"> <!--work on this so that it works-->
                     <div class="task">
                         <input type="checkbox" id="recurring1" />
                         <label for="recurring1">Task 1</label>
-                        <button type="button">View</button>
-                        <button type="button">Edit</button>
+                        <button type="button" onclick="viewTask('Task 1', 'Details about Task 1')">View</button>
+                        <button type="button" onclick="editTask('Task 1')">Edit</button>
                     </div>
                     <div class="task">
                         <input type="checkbox" id="recurring2" />
