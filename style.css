@@ -4,6 +4,13 @@ body {
     margin: 0; 
 }
 
+header { 
+    background: #CCC7BF; 
+    color: #fff; 
+    padding: 10px 0; 
+    text-align: center; 
+}
+
 .welcome_container {
     max-width: 400px;
     margin: 60px auto;
