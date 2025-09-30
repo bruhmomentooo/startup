@@ -7,8 +7,10 @@ body {
 header { 
     background: #CCC7BF; 
     color: #fff; 
-    padding: 10px 0; 
-    text-align: center; 
+}
+
+.custom-navbar {
+    background-color: #CCC7BF;
 }
 
 .welcome_container {
