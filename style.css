@@ -4,9 +4,8 @@ body {
     margin: 0; 
 }
 
-header { 
-    background: #CCC7BF; 
-    color: #fff; 
+header {
+    background-color: #CCC7BF
 }
 
 .custom-navbar {
@@ -55,6 +54,11 @@ button {
 
 button:hover { 
     background: #0056b3; 
+}
+
+.footer-content {
+    padding: 10px;
+    background-color: #EDEEEB
 }
 
 
