@@ -4,7 +4,7 @@ body {
     margin: 0; 
 }
 
-.container {
+.welcome_container {
     max-width: 400px;
     margin: 60px auto;
     background: #fff;
@@ -47,6 +47,7 @@ button {
 button:hover { 
     background: #0056b3; 
 }
+
 
 .task {
       margin-bottom: 12px;
