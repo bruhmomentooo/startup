@@ -82,8 +82,8 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Header, footer, and main content body** - I did not complete this part of the deliverable.
-- [ ] **Navigation elements** - I did not complete this part of the deliverable.
+- [x] **Header, footer, and main content body** - I added a constant header and footer for each of the pages. The main content fits the page that it corresponds with.
+- [x] **Navigation elements** - I created a consistent navigation bar and each of the elements are visible to navigate whenever.
 - [ ] **Responsive to window resizing** - I did not complete this part of the deliverable.
 - [ ] **Application elements** - I did not complete this part of the deliverable.
 - [ ] **Application text content** - I did not complete this part of the deliverable.
