@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Home - Task Tracker App</title>
         <link rel="icon" href="tasktrackerappicon.png" />
-        <!--<link rel="stylesheet" href="style.css">-->
+        <link rel="stylesheet" href="style.css">
     </head>
     <body class="home-page">
         <header>
@@ -30,25 +30,27 @@
             </div>
 
             <h3>Recurring Tasks</h3><!-- calls to database to get information -->
-                <div class="task_container" id="recurringTasks" link rel="stylesheet" href="tasks_modal.css" src="tasks_modal.js"> <!--work on this so that it works-->
-                    <div class="task">
-                        <input type="checkbox" id="recurring1" />
-                        <label for="recurring1">Task 1</label>
-                        <button type="button" onclick="viewTask('Task 1', 'Details about Task 1')">View</button>
-                        <button type="button" onclick="editTask('Task 1')">Edit</button>
-                    </div>
-                    <div class="task">
-                        <input type="checkbox" id="recurring2" />
-                        <label for="recurring2">Task 2</label>
-                        <button type="button">View</button>
-                        <button type="button">Edit</button>
-                    </div>
-                    <div class="task">
-                        <input type="checkbox" id="recurring3" />
-                        <label for="recurring3">Task 3</label>
-                        <button type="button">View</button>
-                        <button type="button">Edit</button>
-                    </div>
+                <div class="task_container" id="recurringTasks">
+                    <ul id="recurringTasksList">
+                        <li class="task">
+                            <input type="checkbox" id="recurring1" />
+                            <label for="recurring1">Task 1</label>
+                            <button type="button" onclick="viewTask('Task 1', 'Details about Task 1')">View</button>
+                            <button type="button" onclick="editTask('Task 1')">Edit</button>
+                        </li>
+                        <li class="task">
+                            <input type="checkbox" id="recurring2" />
+                            <label for="recurring2">Task 2</label>
+                            <button type="button">View</button>
+                            <button type="button">Edit</button>
+                        </li>
+                        <li class="task">
+                            <input type="checkbox" id="recurring3" />
+                            <label for="recurring3">Task 3</label>
+                            <button type="button">View</button>
+                            <button type="button">Edit</button>
+                        </li>
+                    </ul>
                 </div>
             <hr />
             
@@ -80,5 +82,13 @@
             <br /> 
             <a href="https://github.com/bruhmomentooo/startup.git">GitHub</a>
         </footer>
+        <div id="popup" class="popup"> <!-- Modal Popup -->
+            <div class="popup-content">
+                <span class="close" onclick="closePopup()">&times;</span>
+                <h2 id="popup-title">Task Title</h2>
+                <p id="popup-details">Task Details</p>
+            </div>
+        </div>
+        <script src="task_functions.js"></script>
     </body>
 </html>
