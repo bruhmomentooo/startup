@@ -1,10 +1,6 @@
 main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 110px);
     padding: 20px;
-    flex-direction: column;
+    margin-top: 70px;
 }
 
 body { 
@@ -15,6 +11,14 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+}
+
+body.login-page main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 110px);
+    padding: 20px;
 }
 
 header {
