@@ -1,6 +1,5 @@
 main {
     display: flex;
-    flex-wrap: wrap;
     margin-left: 220px;
     padding: 20px;
     margin-top: 70px;
@@ -37,9 +36,23 @@ main {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+.content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.welcome_message {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
 .task_container {
     flex: 1;
-    margin: 10px;
     padding: 20px;
     background: #fff;
     border-radius: 8px;
@@ -99,9 +112,12 @@ main {
         margin-bottom: 20px;
     }
 
+    .content {
+        flex-direction: column;
+    }
+
     .task_container {
         width: 100%;
-        margin: 10px 0;
     }
 }
 
