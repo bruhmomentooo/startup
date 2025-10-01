@@ -1,0 +1,128 @@
+main {
+    margin-left: 220px; /* Leave space for the sidebar */
+    padding: 20px;
+}
+
+.sidebar {
+    width: 200px;
+    position: fixed;
+    top: 70px; /* Adjust to align with the fixed header */
+    left: 0;
+    background: #f4f4f4;
+    padding: 20px;
+    min-height: calc(100vh - 70px); /* Full height minus header height */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar button {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #007bff;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: left; /* Align text to the left */
+}
+
+.sidebar button:hover {
+    background: #0056b3;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.task_container {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.task_container h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.task {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.task label {
+    flex: 1;
+    margin-left: 10px;
+}
+
+.task button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.task button:hover {
+    background: #0056b3;
+}
+
+.task {
+      margin-bottom: 12px;
+    }
+
+    /* --- Popup Overlay --- */
+    .popup {
+      display: none; /* hidden by default */
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto; /* allow scroll if content is tall */
+      background-color: rgba(0,0,0,0.5); /* dark overlay */
+    }
+
+        /* --- Popup Box --- */
+    .popup-content {
+      background: #fff;
+      margin: 10% auto; /* centers vertically */
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 400px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Close Button (X) */
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #555;
+    }
+    .close:hover {
+      color: black;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
