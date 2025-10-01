@@ -9,11 +9,11 @@ main {
 .sidebar {
     width: 200px;
     position: fixed;
-    top: 70px; /* Adjust to align with the fixed header */
+    top: 70px;
     left: 0;
     background: #f4f4f4;
     padding: 20px;
-    min-height: calc(100vh - 70px); /* Full height minus header height */
+    min-height: calc(100vh - 70px);
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -28,7 +28,7 @@ main {
     border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
-    text-align: left; /* Align text to the left */
+    text-align: left;
 }
 
 .sidebar button:hover {
@@ -78,6 +78,19 @@ main {
 
 .task button:hover {
     background: #0056b3;
+}
+
+@media (max-width: 768px) {
+    main {
+        grid-template-columns: 1fr; /* Stack sidebar and content vertically */
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+    }
 }
 
 .task {
