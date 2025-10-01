@@ -18,6 +18,11 @@ main {
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Mobile toggle button (hidden on desktop) */
+.mobile-sidebar-toggle {
+    display: none; /* visible only on small screens via media query */
+}
+
 .sidebar button {
     display: block;
     width: 100%;
@@ -39,8 +44,11 @@ main {
 
 .content {
     display: flex;
-    flex-wrap: column;
     gap: 20px;
+    /* allow task containers to wrap to the next row when there's not enough space */
+    flex-wrap: wrap;
+    /* keep each column aligned to the top */
+    align-items: flex-start;
 }
 
 .task_container_wrapper {
@@ -105,18 +113,40 @@ main {
     }
 
     .sidebar {
+        /* hide the fixed sidebar on small screens by default; will be opened via the Menu button */
+        display: none;
         position: relative;
         width: 100%;
         height: auto;
         margin-bottom: 20px;
     }
 
-    .task_container_wrapper {
+    /* When toggled open on mobile, make sidebar appear as an overlay */
+    .sidebar.mobile-open {
+        display: block;
+        position: fixed;
+        left: 10%;
+        top: 80px;
+        width: 80%;
+        max-width: 360px;
+        min-height: calc(100vh - 80px);
+        z-index: 2000;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        background: #f4f4f4;
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    /* Stack content (task containers) vertically on small screens */
+    .content {
         flex-direction: column;
     }
 
     .task_container {
+        /* make each task container fill the available width on small screens */
         width: 100%;
+        max-width: none;
+        min-width: 0;
     }
 }
 
@@ -168,4 +198,28 @@ main {
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Position the mobile menu toggle as a floating button at the bottom center */
+    .mobile-sidebar-toggle {
+        display: block;
+        position: fixed;
+        /* place the button over the footer on the bottom-right */
+        bottom: 16px;
+        right: 16px;
+        transform: none;
+        z-index: 4000; /* ensure it's above footer and overlays */
+        /* compact circular appearance */
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        padding: 0;
+        font-size: 14px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }

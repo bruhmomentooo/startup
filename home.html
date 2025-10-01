@@ -35,10 +35,19 @@
                     </div>
                 </div>
             </nav>
+            <!-- Floating mobile Menu button (visible on small screens) -->
+            <button id="mobileMenuBtn" class="btn mobile-sidebar-toggle d-lg-none" aria-controls="siteSidebar" aria-expanded="false" aria-label="Open menu">
+                <!-- Hamburger icon (SVG) -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M3 6h18" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+                    <path d="M3 12h18" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+                    <path d="M3 18h18" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </button>
         </header>
         <main>
             <div class="content">
-                <div class="sidebar">
+                <div id="siteSidebar" class="sidebar">
                     <button type="get">Create</button>
                     <button type="get">Select/Edit</button>
                     <button type="get">Add to Google Calendar</button> <!-- call to third party service api -->
@@ -106,6 +115,50 @@
             </div>
         </div>
         <script src="task_functions.js"></script>
+        <script>
+            // Mobile sidebar toggle
+            (function () {
+                const btn = document.getElementById('mobileMenuBtn');
+                const sidebar = document.querySelector('.sidebar');
+                if (!btn || !sidebar) return;
+
+
+                function toggleSidebar() {
+                    const open = sidebar.classList.toggle('mobile-open');
+                    // prevent body scroll when sidebar open
+                    document.body.style.overflow = open ? 'hidden' : '';
+                    btn.setAttribute('aria-expanded', String(open));
+                    if (open) {
+                        // replace with close (X) icon
+                        btn.setAttribute('aria-label', 'Close menu');
+                        btn.innerHTML = `
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M6 6l12 12" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M18 6l-12 12" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                            </svg>`;
+                    } else {
+                        // hamburger icon
+                        btn.setAttribute('aria-label', 'Open menu');
+                        btn.innerHTML = `
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M3 6h18" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 12h18" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 18h18" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+                            </svg>`;
+                    }
+                }
+
+                btn.addEventListener('click', toggleSidebar);
+
+                // Close when clicking outside the sidebar
+                document.addEventListener('click', function (e) {
+                    if (!sidebar.classList.contains('mobile-open')) return;
+                    if (sidebar.contains(e.target) || btn.contains(e.target)) return;
+                    sidebar.classList.remove('mobile-open');
+                    document.body.style.overflow = '';
+                });
+            })();
+        </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     </body>
 </html>
