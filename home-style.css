@@ -3,6 +3,7 @@ main {
     margin-left: 220px;
     padding: 20px;
     margin-top: 70px;
+    flex-direction: column;
     gap: 20px;
 }
 
@@ -38,17 +39,15 @@ main {
 
 .content {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: column;
     gap: 20px;
-    align-items: flex-start;
 }
 
-.welcome_message {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: center;
+.task_container_wrapper {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 .task_container {
@@ -112,7 +111,7 @@ main {
         margin-bottom: 20px;
     }
 
-    .content {
+    .task_container_wrapper {
         flex-direction: column;
     }
 
