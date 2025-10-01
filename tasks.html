@@ -6,6 +6,7 @@
         <title>Tasks - Task Tracker App</title>
         <link rel="icon" href="tasktrackerappicon.png" />
         <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="home-style.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     </head>
     <body class="tasks-page">
@@ -36,15 +37,17 @@
             </nav>
         </header>
         <main>
-            <div class="container" id="taskButtons">
-                <menu>
-                    <li><button type="get">Create</button></li> 
-                    <li><button type="get">Select/Edit</button></li>
-                    <li><button type="get">Add to Google Calendar</button></li> <!-- call to third party service api -->
-                    <li><button type="get">Notifications</button></li> <!-- web socket implementation-->
-                </menu>
+            <div class="container">
+                <h1>All Tasks</h1>
             </div>
-            <h3>All Tasks</h3>
+            <div class="sidebar">
+                <button type="get">Create</button>
+                <button type="get">Select/Edit</button>
+                <button type="get">Add to Google Calendar</button> <!-- call to third party service api -->
+                <button type="get">Notifications</button> <!-- web socket implementation-->
+
+            </div>
+
             <div class="container" id="sortFunctions">
                 <button type="get">Sort</button>
                 <button type="get">Filter</button>
