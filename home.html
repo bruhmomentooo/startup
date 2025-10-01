@@ -50,48 +50,45 @@
 
             <h3>Recurring Tasks</h3><!-- calls to database to get information -->
                 <div class="task_container" id="recurringTasks">
-                    <ul id="recurringTasksList">
-                        <li class="task">
-                            <input type="checkbox" id="recurring1" />
+                    <div class="task">
+                            <input class="form-check-input" type="checkbox" id="recurring1" />
                             <label for="recurring1">Task 1</label>
                             <button type="button" onclick="viewTask('Task 1', 'Details about Task 1')">View</button>
                             <button type="button" onclick="editTask('Task 1')">Edit</button>
-                        </li>
-                        <li class="task">
-                            <input type="checkbox" id="recurring2" />
+                    </div>
+                    <div class="task">
+                            <input class="form-check-input" type="checkbox" id="recurring2" />
                             <label for="recurring2">Task 2</label>
-                            <button type="button">View</button>
-                            <button type="button">Edit</button>
-                        </li>
-                        <li class="task">
-                            <input type="checkbox" id="recurring3" />
+                            <button type="button" onclick="viewTask('Task 2', 'Details about Task 2')">View</button>
+                            <button type="button" onclick="editTask('Task 2')">Edit</button>
+                    </div>
+                    <div class="task">
+                            <input class="form-check-input" type="checkbox" id="recurring3" />
                             <label for="recurring3">Task 3</label>
-                            <button type="button">View</button>
-                            <button type="button">Edit</button>
-                        </li>
-                    </ul>
+                            <button type="button" onclick="viewTask('Task 3', 'Details about Task 3')">View</button>
+                            <button type="button" onclick="editTask('Task 3')">Edit</button>
+                    </div>
                 </div>
-            <hr />
             
             <h3>All Tasks</h3>
             <div class="task_container" id="allTasks">
                 <div class="task">
-                    <input type="checkbox" id="all1" />
+                    <input class="form-check-input" type="checkbox" id="all1" />
                     <label for="all1">Task 1</label>
-                    <button type="button">View</button>
-                    <button type="button">Edit</button>
+                    <button type="button" onclick="viewTask('Task 1', 'Details about Task 1')">View</button>
+                    <button type="button" onclick="editTask('Task 1')">Edit</button>
                 </div>
                 <div class="task">
-                    <input type="checkbox" id="all2" />
+                    <input class="form-check-input" type="checkbox" id="all2" />
                     <label for="all2">Task 2</label>
-                    <button type="button">View</button>
-                    <button type="button">Edit</button>
+                    <button type="button" onclick="viewTask('Task 2', 'Details about Task 2')">View</button>
+                    <button type="button" onclick="editTask('Task 2')">Edit</button>
                 </div>
                 <div class="task">
-                    <input type="checkbox" id="all3" />
+                    <input class="form-check-input" type="checkbox" id="all3" />
                     <label for="all3">Task 3</label>
-                    <button type="button">View</button>
-                    <button type="button">Edit</button>
+                    <button type="button" onclick="viewTask('Task 3', 'Details about Task 3')">View</button>
+                    <button type="button" onclick="editTask('Task 3')">Edit</button>
                 </div>
             </div>
         </main>
