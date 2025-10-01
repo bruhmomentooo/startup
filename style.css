@@ -2,10 +2,18 @@ body {
     font-family: Arial, sans-serif; 
     background: #f4f4f4; 
     margin: 0; 
+    padding-top: 70px;
+    padding-bottom: 40px;
 }
 
 header {
-    background-color: #CCC7BF
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: #CCC7BF;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .custom-navbar {
@@ -57,8 +65,13 @@ button:hover {
 }
 
 .footer-content {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
     padding: 10px;
-    background-color: #EDEEEB
+    background-color: #EDEEEB;
 }
 
 
