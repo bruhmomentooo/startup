@@ -169,6 +169,30 @@ main {
         max-width: none;
         min-width: 0;
     }
+
+    .task {
+        flex-wrap: wrap; /* Allow wrapping of content */
+        justify-content: space-between; /* Spread items horizontally */
+    }
+
+    .task .task-details {
+        flex: 1; /* Allow task details to take up available space */
+        margin-right: 10px; /* Add spacing between details and buttons */
+    }
+
+    .task button {
+        margin: 5px 0 0 0; /* Add spacing above buttons */
+        flex-shrink: 0; /* Prevent buttons from shrinking */
+    }
+
+    .task p {
+        display: -webkit-box; /* Use WebKit box model */
+        -webkit-line-clamp: 1; /* Limit to 1 line */
+        -webkit-box-orient: vertical; /* Set box orientation to vertical */
+        overflow: hidden; /* Hide overflowing text */
+        text-overflow: ellipsis; /* Add ellipsis for overflow */
+        white-space: normal; /* Allow wrapping within the box */
+    }
 }
 
 .task {
