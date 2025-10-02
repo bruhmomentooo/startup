@@ -37,23 +37,17 @@
             </nav>
         </header>
         <main>
-            <div class="container">
-                <h1>All Tasks</h1>
-            </div>
             <div class="sidebar">
                 <button type="get">Create</button>
                 <button type="get">Select/Edit</button>
                 <button type="get">Add to Google Calendar</button> <!-- call to third party service api -->
                 <button type="get">Notifications</button> <!-- web socket implementation-->
-
-            </div>
-
-            <div class="container" id="sortFunctions">
                 <button type="get">Sort</button>
                 <button type="get">Filter</button>
                 <button type="get">Search</button>
             </div>
-            <div class="container" id="taskList">
+            <div class="task_container" id="taskList">
+                <h1>All Tasks</h1>
                 <table id="allTasks">
                     <tr>
                         <td>
