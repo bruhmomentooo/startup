@@ -86,11 +86,28 @@ main {
     border-radius: 6px;
 }
 
-.task label {
+.task .task-details {
+    display: flex;
+    flex-direction: row;
+    align-items: center; 
     flex: 1;
     margin-left: 10px;
-    justify-content: center;
-    padding-bottom: 12px;
+    gap: 10px;
+}
+
+.task label {
+    font-weight: bold;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.task p {
+     margin: 0;
+    font-size: 14px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .task button {

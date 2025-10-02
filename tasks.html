@@ -48,25 +48,34 @@
             </div>
             <div class="task_container" id="taskList">
                 <h1>All Tasks</h1>
-                <table id="allTasks">
-                    <div class="task">
-                        <input class="form-check-input" type="checkbox" id="all1" />
+                <div class="task">
+                    <input class="form-check-input" type="checkbox" id="all1" />
+                    <div class="task-details">
                         <label for="all1">Task 1</label>
-                        <button type="button" onclick="viewTask('Task 1', 'Details about Task 1')">View</button>
-                        <button type="button" onclick="editTask('Task 1')">Edit</button>
+                        <p>Description for Task 1</p>
                     </div>
-                    <div class="task">
-                        <input class="form-check-input" type="checkbox" id="all2" />
+                    <button type="button" onclick="viewTask('Task 1', 'Details about Task 1')">View</button>
+                    <button type="button" onclick="editTask('Task 1')">Edit</button>
+                </div>
+                <div class="task">
+                    <input class="form-check-input" type="checkbox" id="all2" />
+                    <div class="task-details">
                         <label for="all2">Task 2</label>
-                        <button type="button" onclick="viewTask('Task 2', 'Details about Task 2')">View</button>
-                        <button type="button" onclick="editTask('Task 2')">Edit</button>
+                        <p>Description for Task 2</p>
+                        <p>Last completed: 9-30-2024</p>
                     </div>
-                    <div class="task">
-                        <input class="form-check-input" type="checkbox" id="all3" />
+                    <button type="button" onclick="viewTask('Task 2', 'Details about Task 2')">View</button>
+                    <button type="button" onclick="editTask('Task 2')">Edit</button>
+                </div>
+                <div class="task">
+                    <input class="form-check-input" type="checkbox" id="all3" />
+                    <div class="task-details">
                         <label for="all3">Task 3</label>
-                        <button type="button" onclick="viewTask('Task 3', 'Details about Task 3')">View</button>
-                        <button type="button" onclick="editTask('Task 3')">Edit</button>
+                        <p>Description for Task 3</p>
                     </div>
+                    <button type="button" onclick="viewTask('Task 3', 'Details about Task 3')">View</button>
+                    <button type="button" onclick="editTask('Task 3')">Edit</button>
+                </div>
             </div>
         </main>
         <footer>
