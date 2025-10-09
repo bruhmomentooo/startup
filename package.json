@@ -4,7 +4,9 @@
   "description": "[My Notes](notes.md)",
   "main": "task_functions.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
