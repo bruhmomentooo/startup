@@ -5,7 +5,7 @@ import './app.css';
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
 import { Home } from './home/home';
 import { Login } from './login/login';
-import { Task } from './tasks/task';
+import { Task } from './tasks/tasks';
 
 export default function App() {
   return (
@@ -24,13 +24,13 @@ export default function App() {
                         <div className="collapse navbar-collapse" id="navbarNav">
                             <ul className="navbar-nav ms-auto">
                                 <li className="nav-item">
-                                    <a className="nav-link" href="home.html">Home</a>
+                                    <NavLink className="nav-link" to="/home">Home</NavLink>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="tasks.html">All Tasks</a>
+                                    <NavLink className="nav-link" to="/tasks">All Tasks</NavLink>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="index.html">Logout</a>
+                                    <NavLink className="nav-link" to="/login">Logout</NavLink>
                                 </li>
                             </ul>
                         </div>
@@ -39,7 +39,12 @@ export default function App() {
             </header>
         </BrowserRouter>
 
-        <main>App components go here</main>
+        <Routes>
+            <Route path="/home" element={<Home />} />
+            <Route path="/tasks" element={<Task />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<NotFound />} />
+        </Routes>
 
         <footer>
             <div className="footer-content">
@@ -50,4 +55,8 @@ export default function App() {
         </footer>
     </div>
   );
+}
+
+function NotFound() {
+  return <main className="container-fluid bg-secondary text-center">404: Return to sender. Address unknown.</main>;
 }
