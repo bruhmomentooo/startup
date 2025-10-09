@@ -84,10 +84,10 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 - [x] **Header, footer, and main content body** - I added a constant header and footer for each of the pages. The main content fits the page that it corresponds with.
 - [x] **Navigation elements** - I created a consistent navigation bar and each of the elements are visible to navigate whenever.
-- [ ] **Responsive to window resizing** - I did not complete this part of the deliverable.
-- [ ] **Application elements** - I did not complete this part of the deliverable.
-- [ ] **Application text content** - I did not complete this part of the deliverable.
-- [ ] **Application images** - I did not complete this part of the deliverable.
+- [x] **Responsive to window resizing** - Made multiple edits for mobile so that buttons were accessible and the content was viewable.
+- [x] **Application elements** - The basic elements of my program are formatted and made to look good for user experience.
+- [x] **Application text content** - Added text that can be seen in both desktop and mobile.
+- [x] **Application images** - Applied an image to the navbar which is visible to every page.
 
 ## 🚀 React part 1: Routing deliverable
 
