@@ -39,9 +39,9 @@ export default function App() {
                 </header>
 
                 <Routes>
+                    <Route path="/" element={<Login />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/tasks" element={<Tasks />} />
-                    <Route path="/login" element={<Login />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>
 
