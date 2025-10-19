@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
@@ -8,6 +8,11 @@ import { Login } from './login/login';
 import { Tasks } from './tasks/tasks';
 
 export default function App() {
+    const [navOpen, setNavOpen] = useState(false);
+
+    const toggleNav = () => setNavOpen(o => !o);
+    const closeNav = () => setNavOpen(false);
+
     return (
         <BrowserRouter>
             <div>
@@ -18,11 +23,19 @@ export default function App() {
                                 <img alt="tasktrackerappicon" src="tasktrackerappicon.png" width="40" height="40" />
                                 Task Tracker App
                             </a>
-                            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                                <span className="navbar-toggler-icon"></span>
+                            <button
+                                className="navbar-toggler"
+                                type="button"
+                                aria-controls="navbarNav"
+                                aria-expanded={navOpen}
+                                aria-label={navOpen ? 'Close navigation' : 'Open navigation'}
+                                onClick={toggleNav}
+                            >
+                                <span className="navbar-toggler-icon">{navOpen ? '\u2715' : '\u2630'}</span>
                             </button>
-                            <div className="collapse navbar-collapse" id="navbarNav">
-                                <ul className="navbar-nav ms-auto">
+
+                            <div className={`collapse navbar-collapse ${navOpen ? 'show' : ''}`} id="navbarNav">
+                                <ul className="navbar-nav ms-auto" onClick={closeNav}>
                                     <li className="nav-item">
                                         <NavLink className="nav-link" to="/home">Home</NavLink>
                                     </li>
@@ -39,7 +52,7 @@ export default function App() {
                 </header>
 
                 <Routes>
-                    <Route path="/" element={<Login />} />
+                    <Route path="/" element={<Login />} exact />
                     <Route path="/home" element={<Home />} />
                     <Route path="/tasks" element={<Tasks />} />
                     <Route path="*" element={<NotFound />} />
