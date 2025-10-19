@@ -1,8 +1,8 @@
 import React from 'react';
 
 export function Login() {
-  return (
-    <main>
+    return (
+        <main className="login-main">
             <div className="welcome_container">
                 <h1>Welcome!</h1>
                 <p style={{textAlign: "center"}}>Please log in or create an account to begin your task management.</p>

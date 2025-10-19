@@ -30,7 +30,7 @@ export default function App() {
                                         <NavLink className="nav-link" to="/tasks">All Tasks</NavLink>
                                     </li>
                                     <li className="nav-item">
-                                        <NavLink className="nav-link" to="/login">Logout</NavLink>
+                                        <NavLink className="nav-link" to="/">Logout</NavLink>
                                     </li>
                                 </ul>
                             </div>
