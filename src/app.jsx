@@ -52,7 +52,19 @@ export default function App() {
                 </header>
 
                 <Routes>
-                    <Route path="/" element={<Login />} exact />
+                    <Route path="/"
+                    element={
+                        <Login
+                            /*userName={userName}
+                            authState={authState}
+                            onAuthChange={(userName, authState) => {
+                                setAuthState(authState);
+                                setUserName(userName);
+                            }}*/
+                        />
+                    }
+                    exact
+                    />
                     <Route path="/home" element={<Home />} />
                     <Route path="/tasks" element={<Tasks />} />
                     <Route path="*" element={<NotFound />} />

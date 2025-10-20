@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function Login() {
+export function Login({ userName, authState, onAuthChange }) {
     return (
         <main className="login-main">
             <div className="welcome_container">
