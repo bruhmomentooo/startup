@@ -82,6 +82,14 @@ export function Home() {
                     </div>
                 </div>
             </div>
+    {/* Popup Code */}
+      <div id="popup" className="popup" style={{ display: popup.show ? 'block' : 'none' }} onClick={(e) => { if (e.target.id === 'popup') closePopup(); }}>
+        <div className="popup-content">
+          <span className="close" onClick={closePopup}>&times;</span>
+          <h2 id="popup-title">{popup.title}</h2>
+          <div id="popup-details">{popup.details}</div>
+        </div>
+      </div>
     </main>
   );
 }
