@@ -1,11 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './home-style.css';
 import './tasks_modal.css';
 
 export function Home() {
+  const [popup, setPopup] = useState({ show: false, title: '', details: '' });
+
+  function viewTask(title, details) {
+    setPopup({ show: true, title, details });
+  }
+
+  function editTask(title) {
+    alert('Edit screen for: ' + title);
+    // In future: open a form modal instead of alert
+  }
+
+  function closePopup() {
+    setPopup({ show: false, title: '', details: '' });
+  }
+
   return (
     <main>
-      <div className="content">
+        <div className="content">
                 <div id="siteSidebar" className="sidebar">
                     <button type="get">Create</button>
                     <button type="get">Select/Edit</button>
@@ -93,26 +108,3 @@ export function Home() {
     </main>
   );
 }
-
-function viewTask(title, details) {
-    document.getElementById("popup-title").textContent = title;
-    document.getElementById("popup-details").textContent = details;
-    document.getElementById("popup").style.display = "block";
-}
-
-function editTask(title) {
-    alert("Edit screen for: " + title);
-      // In future: open a form modal instead of alert
-}
-
-function closePopup() {
-    document.getElementById("popup").style.display = "none";
-}
-
-    // Close popup when clicking outside the box
-window.onclick = function(event) {
-      const popup = document.getElementById("popup");
-      if (event.target === popup) {
-        closePopup();
-      }
-}   
