@@ -72,13 +72,35 @@ function viewTask(title, details) {
 }
 
 function editTask(title) {
-    alert('Edit screen for: ' + title);
-    // In future: open a form modal instead of alert
+        // Kept for compatibility, but prefer openEdit to show modal
+        alert('Edit screen for: ' + title);
 }
 
 function closePopup() {
     setPopup({ show: false, title: '', details: '' });
 }
+
+    // Edit modal state
+    const [editPopup, setEditPopup] = useState({ show: false, id: null, title: '', details: '', recurring: false, list: null });
+
+    function openEdit(list, id) {
+        const sourceList = list === 'recurring' ? recurringTasks : normalTasks;
+        const item = sourceList.find(t => t.id === id);
+        if (!item) return alert('Task not found');
+        setEditPopup({ show: true, id: item.id, title: item.title, details: item.details || '', recurring: list === 'recurring', list });
+    }
+
+    function saveEdit(e) {
+        e && e.preventDefault();
+        if (!editPopup.id) return;
+        const updated = { id: editPopup.id, title: editPopup.title.trim(), details: editPopup.details.trim(), last: (new Date()).toISOString().slice(0,10) };
+        if (editPopup.list === 'recurring') {
+            setRecurringTasks(ts => ts.map(t => t.id === editPopup.id ? updated : t));
+        } else {
+            setNormalTasks(ts => ts.map(t => t.id === editPopup.id ? updated : t));
+        }
+        setEditPopup({ show: false, id: null, title: '', details: '', recurring: false, list: null });
+    }
 
 // Persist to localStorage whenever the lists change
 useEffect(() => {
@@ -116,7 +138,7 @@ useEffect(() => {
                                     <p><i>Last completed: {t.last}</i></p>
                                 </div>
                                 <button type="button" onClick={() => viewTask(t.title, t.details)}>View</button>
-                                <button type="button" onClick={() => editTask(t.title)}>Edit</button>
+                                <button type="button" onClick={() => openEdit('recurring', t.id)}>Edit</button>
                                 <button type="button" onClick={() => removeTask('recurring', i)}>Remove</button>
                         </div>
                     ))}
@@ -133,7 +155,7 @@ useEffect(() => {
                                 <p><i>Last completed: {t.last}</i></p>
                             </div>
                             <button type="button" onClick={() => viewTask(t.title, t.details)}>View</button>
-                            <button type="button" onClick={() => editTask(t.title)}>Edit</button>
+                            <button type="button" onClick={() => openEdit('normal', t.id)}>Edit</button>
                             <button type="button" onClick={() => removeTask('normal', i)}>Remove</button>
                         </div>
                     ))}
@@ -161,6 +183,23 @@ useEffect(() => {
                         <label><input type="checkbox" checked={createPopup.recurring} onChange={e => setCreatePopup(cp => ({ ...cp, recurring: e.target.checked }))} /> Recurring?</label>
                         <div style={{ marginTop: 12 }}>
                             <button type="submit">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {/* Edit Popup Code */}
+            <div id="editPopup" className="popup" style={{ display: editPopup.show ? 'block' : 'none' }} onClick={(e) => { if (e.target.id === 'editPopup') setEditPopup({ show: false, id: null, title: '', details: '', recurring: false, list: null }); }}>
+                <div className="popup-content">
+                    <span className="close" onClick={() => setEditPopup({ show: false, id: null, title: '', details: '', recurring: false, list: null })}>&times;</span>
+                    <h2>Edit Task</h2>
+                    <form onSubmit={saveEdit}>
+                        <label>Title</label>
+                        <input value={editPopup.title} onChange={e => setEditPopup(ep => ({ ...ep, title: e.target.value }))} required />
+                        <label>Details</label>
+                        <input value={editPopup.details} onChange={e => setEditPopup(ep => ({ ...ep, details: e.target.value }))} />
+                        <div style={{ marginTop: 12 }}>
+                            <button type="submit">Save</button>
                         </div>
                     </form>
                 </div>
