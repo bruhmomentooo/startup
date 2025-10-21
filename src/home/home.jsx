@@ -8,21 +8,23 @@ export function Home() {
 const [recurringTasks, setRecurringTasks] = useState(() => {
     try {
         const raw = localStorage.getItem('recurringTasks');
-        if (raw) return JSON.parse(raw);
-    } catch (e) {}
-    return [
-        <p style={{textAlign: "center"}}>No recurring tasks</p>
-    ];
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
+        }
+    } catch (e) { /* ignore malformed data */ }
+    return []; // start empty for a fresh login
 });
 
 const [normalTasks, setNormalTasks] = useState(() => {
     try {
         const raw = localStorage.getItem('normalTasks');
-        if (raw) return JSON.parse(raw);
-    } catch (e) {}
-    return [
-        <p style={{textAlign: "center"}}>No tasks</p>
-    ];
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
+        }
+    } catch (e) { /* ignore malformed data */ }
+    return []; // start empty for a fresh login
 });
 
 // temporary holder used for the create-modal
@@ -80,11 +82,17 @@ function closePopup() {
 
 // Persist to localStorage whenever the lists change
 useEffect(() => {
-    try { localStorage.setItem('recurringTasks', JSON.stringify(recurringTasks)); } catch (e) {}
+    try {
+        const toSave = Array.isArray(recurringTasks) ? recurringTasks.filter(t => t && typeof t === 'object') : [];
+        localStorage.setItem('recurringTasks', JSON.stringify(toSave));
+    } catch (e) {}
 }, [recurringTasks]);
 
 useEffect(() => {
-    try { localStorage.setItem('normalTasks', JSON.stringify(normalTasks)); } catch (e) {}
+    try {
+        const toSave = Array.isArray(normalTasks) ? normalTasks.filter(t => t && typeof t === 'object') : [];
+        localStorage.setItem('normalTasks', JSON.stringify(toSave));
+    } catch (e) {}
 }, [normalTasks]);
 
   return (
