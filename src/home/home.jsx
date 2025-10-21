@@ -38,7 +38,7 @@ function createTask(e) {
     e && e.preventDefault();
     const source = e && e._isCreateModal ? createPopup : newTask;
     if (!source.title || !source.title.trim()) return;
-    const task = { id: `${source.recurring ? 'r' : 'n'}-${Date.now()}-${Math.floor(Math.random()*1000)}`, title: source.title.trim(), details: (source.details||'').trim(), last: 'Never' };
+        const task = { id: `${source.recurring ? 'r' : 'n'}-${Date.now()}-${Math.floor(Math.random()*1000)}`, title: source.title.trim(), details: (source.details||'').trim(), last: 'Never', completedDates: [] };
     if (source.recurring) {
         setRecurringTasks(t => [task, ...t]);
     } else {
@@ -65,10 +65,10 @@ function manageNotifications() {
 }
 
 // Task Functions
-const [popup, setPopup] = useState({ show: false, title: '', details: '' });
+const [popup, setPopup] = useState({ show: false, title: '', details: '', completedDates: [] });
 
-function viewTask(title, details) {
-    setPopup({ show: true, title, details });
+function viewTask(task) {
+    setPopup({ show: true, title: task.title, details: task.details, completedDates: task.completedDates || [] });
 }
 
 function editTask(title) {
@@ -77,7 +77,7 @@ function editTask(title) {
 }
 
 function closePopup() {
-    setPopup({ show: false, title: '', details: '' });
+    setPopup({ show: false, title: '', details: '', completedDates: [] });
 }
 
     // Edit modal state
@@ -93,14 +93,39 @@ function closePopup() {
     function saveEdit(e) {
         e && e.preventDefault();
         if (!editPopup.id) return;
-        const updated = { id: editPopup.id, title: editPopup.title.trim(), details: editPopup.details.trim(), last: (new Date()).toISOString().slice(0,10) };
+        const updatedFields = { title: editPopup.title.trim(), details: editPopup.details.trim() };
         if (editPopup.list === 'recurring') {
-            setRecurringTasks(ts => ts.map(t => t.id === editPopup.id ? updated : t));
+            setRecurringTasks(ts => ts.map(t => t.id === editPopup.id ? { ...t, ...updatedFields } : t));
         } else {
-            setNormalTasks(ts => ts.map(t => t.id === editPopup.id ? updated : t));
+            setNormalTasks(ts => ts.map(t => t.id === editPopup.id ? { ...t, ...updatedFields } : t));
         }
         setEditPopup({ show: false, id: null, title: '', details: '', recurring: false, list: null });
     }
+
+// Record completion when a checkbox is checked. We'll append today's date and update last.
+function toggleComplete(listName, id, checked) {
+    if (!checked) return; // only record on check
+    const dateStr = (new Date()).toISOString().slice(0,10);
+    if (listName === 'recurring') {
+        setRecurringTasks(ts => ts.map(t => t.id === id ? { ...t, completedDates: Array.isArray(t.completedDates) ? [...t.completedDates, dateStr] : [dateStr], last: dateStr } : t));
+    } else {
+        setNormalTasks(ts => ts.map(t => t.id === id ? { ...t, completedDates: Array.isArray(t.completedDates) ? [...t.completedDates, dateStr] : [dateStr], last: dateStr } : t));
+    }
+    // show a quick confirmation toast
+    setToast({ show: true, message: 'Task completed! (' + formatDate(dateStr) + ')' });
+    setTimeout(() => setToast({ show: false, message: '' }), 2000);
+}
+
+// Toast state for visual confirmation
+const [toast, setToast] = useState({ show: false, message: '' });
+
+// small friendly date formatter
+function formatDate(isoDate) {
+    try {
+        const d = new Date(isoDate);
+        return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    } catch (e) { return isoDate; }
+}
 
 // Persist to localStorage whenever the lists change
 useEffect(() => {
@@ -132,12 +157,12 @@ useEffect(() => {
                     {recurringTasks.length === 0 && <p style={{textAlign: "center"}}>No recurring tasks</p>}
                     {recurringTasks.map((t, i) => (
                         <div className="task" key={`rec-${i}`}>
-                                <input className="form-check-input" type="checkbox" id={`recurring${i}`} />
+                                <input className="form-check-input" type="checkbox" id={`recurring${i}`} onChange={e => toggleComplete('recurring', t.id, e.target.checked)} />
                                 <div className="task-details">
                                     <label htmlFor={`recurring${i}`}>{t.title}</label>
                                     <p><i>Last completed: {t.last}</i></p>
                                 </div>
-                                <button type="button" onClick={() => viewTask(t.title, t.details)}>View</button>
+                                <button type="button" onClick={() => viewTask(t)}>View</button>
                                 <button type="button" onClick={() => openEdit('recurring', t.id)}>Edit</button>
                                 <button type="button" onClick={() => removeTask('recurring', i)}>Remove</button>
                         </div>
@@ -149,12 +174,12 @@ useEffect(() => {
                     {normalTasks.length === 0 && <p style={{textAlign: "center"}}>No tasks</p>}
                     {normalTasks.map((t, i) => (
                         <div className="task" key={`norm-${i}`}>
-                            <input className="form-check-input" type="checkbox" id={`all${i}`} />
+                            <input className="form-check-input" type="checkbox" id={`all${i}`} onChange={e => toggleComplete('normal', t.id, e.target.checked)} />
                             <div className="task-details">
                                 <label htmlFor={`all${i}`}>{t.title}</label>
                                 <p><i>Last completed: {t.last}</i></p>
                             </div>
-                            <button type="button" onClick={() => viewTask(t.title, t.details)}>View</button>
+                            <button type="button" onClick={() => viewTask(t)}>View</button>
                             <button type="button" onClick={() => openEdit('normal', t.id)}>Edit</button>
                             <button type="button" onClick={() => removeTask('normal', i)}>Remove</button>
                         </div>
@@ -165,8 +190,16 @@ useEffect(() => {
             <div id="popup" className="popup" style={{ display: popup.show ? 'block' : 'none' }} onClick={(e) => { if (e.target.id === 'popup') closePopup(); }}>
                 <div className="popup-content">
                     <span className="close" onClick={closePopup}>&times;</span>
-                    <h2 id="popup-title">{popup.title}</h2>
-                    <div id="popup-details">{popup.details}</div>
+                        <h2 id="popup-title">{popup.title}</h2>
+                        <div id="popup-details">{popup.details}</div>
+                        {popup.completedDates && popup.completedDates.length > 0 && (
+                            <div style={{ marginTop: 12 }}>
+                                <strong>Times completed:</strong>
+                                <ul>
+                                    {popup.completedDates.map((d, idx) => <li key={idx}>{formatDate(d)}</li>)}
+                                </ul>
+                            </div>
+                        )}
                 </div>
             </div>
 
@@ -204,6 +237,11 @@ useEffect(() => {
                     </form>
                 </div>
             </div>
+
+                        {/* Toast confirmation */}
+                        {toast.show && (
+                                <div className="task-toast">{toast.message}</div>
+                        )}
     </main>
   );
 }

@@ -53,4 +53,18 @@ body {
       to { opacity: 1; transform: translateY(0); }
     }
 
+/* Toast confirmation */
+.task-toast {
+  position: fixed;
+  right: 16px;
+  bottom: 24px;
+  background: #28a745;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 1100;
+  font-weight: 600;
+}
+
     
