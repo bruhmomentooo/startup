@@ -11,8 +11,7 @@ const [recurringTasks, setRecurringTasks] = useState(() => {
         if (raw) return JSON.parse(raw);
     } catch (e) {}
     return [
-        { id: `r-${Date.now()}-1`, title: 'Task 1', details: 'Description for Task 1', last: '08-14-2023' },
-        { id: `r-${Date.now()}-2`, title: 'Task 2', details: 'Description for Task 2', last: '09-30-2024' },
+        <p style={{textAlign: "center"}}>No recurring tasks</p>
     ];
 });
 
@@ -22,8 +21,7 @@ const [normalTasks, setNormalTasks] = useState(() => {
         if (raw) return JSON.parse(raw);
     } catch (e) {}
     return [
-        { id: `n-${Date.now()}-1`, title: 'Task 1', details: 'Description for Task 1', last: '08-14-2023' },
-        { id: `n-${Date.now()}-2`, title: 'Task 2', details: 'Description for Task 2', last: '09-30-2024' },
+        <p style={{textAlign: "center"}}>No tasks</p>
     ];
 });
 
@@ -101,13 +99,12 @@ useEffect(() => {
             {/* Recurring Task List */}
                 <div className="task_container" id="recurringTasks">
                     <h3>Recurring Tasks</h3>
-                    {recurringTasks.length === 0 && <p>No recurring tasks</p>}
+                    {recurringTasks.length === 0 && <p style={{textAlign: "center"}}>No recurring tasks</p>}
                     {recurringTasks.map((t, i) => (
                         <div className="task" key={`rec-${i}`}>
                                 <input className="form-check-input" type="checkbox" id={`recurring${i}`} />
                                 <div className="task-details">
                                     <label htmlFor={`recurring${i}`}>{t.title}</label>
-                                    <p>{t.details}</p>
                                     <p><i>Last completed: {t.last}</i></p>
                                 </div>
                                 <button type="button" onClick={() => viewTask(t.title, t.details)}>View</button>
@@ -119,13 +116,12 @@ useEffect(() => {
 
                 <div className="task_container" id="normalTasks">
                     <h3>Tasks</h3>
-                    {normalTasks.length === 0 && <p>No tasks</p>}
+                    {normalTasks.length === 0 && <p style={{textAlign: "center"}}>No tasks</p>}
                     {normalTasks.map((t, i) => (
                         <div className="task" key={`norm-${i}`}>
                             <input className="form-check-input" type="checkbox" id={`all${i}`} />
                             <div className="task-details">
                                 <label htmlFor={`all${i}`}>{t.title}</label>
-                                <p>{t.details}</p>
                                 <p><i>Last completed: {t.last}</i></p>
                             </div>
                             <button type="button" onClick={() => viewTask(t.title, t.details)}>View</button>
@@ -154,10 +150,9 @@ useEffect(() => {
                         <input value={createPopup.title} onChange={e => setCreatePopup(cp => ({ ...cp, title: e.target.value }))} required />
                         <label>Details</label>
                         <input value={createPopup.details} onChange={e => setCreatePopup(cp => ({ ...cp, details: e.target.value }))} />
-                        <label><input type="checkbox" checked={createPopup.recurring} onChange={e => setCreatePopup(cp => ({ ...cp, recurring: e.target.checked }))} /> Recurring</label>
+                        <label><input type="checkbox" checked={createPopup.recurring} onChange={e => setCreatePopup(cp => ({ ...cp, recurring: e.target.checked }))} /> Recurring?</label>
                         <div style={{ marginTop: 12 }}>
                             <button type="submit">Create</button>
-                            <button type="button" onClick={() => setCreatePopup({ show: false, title: '', details: '', recurring: false })} style={{ marginLeft: 8 }}>Cancel</button>
                         </div>
                     </form>
                 </div>

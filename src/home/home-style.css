@@ -119,8 +119,8 @@ main {
     border-radius: 4px;
     cursor: pointer;
     font-size: 13px;
-    min-width: 30px;
-    max-width: 50px;
+    min-width: 60px;
+    max-width: 70px;
 }
 
 .task button:hover {
