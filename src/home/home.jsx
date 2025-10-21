@@ -83,9 +83,6 @@ function closePopup() {
     // Edit modal state
     const [editPopup, setEditPopup] = useState({ show: false, id: null, title: '', details: '', recurring: false, list: null });
 
-    // Track checkbox temporary resets: when user checks, we flash the toast and then uncheck visually
-    const [resetChecks, setResetChecks] = useState(new Set());
-
     function openEdit(list, id) {
         const sourceList = list === 'recurring' ? recurringTasks : normalTasks;
         const item = sourceList.find(t => t.id === id);
@@ -117,17 +114,18 @@ function toggleComplete(listName, id, checked) {
     // show a quick confirmation toast
     setToast({ show: true, message: 'Task completed! (' + formatDate(dateStr) + ')' });
     setTimeout(() => setToast({ show: false, message: '' }), 2000);
-    // schedule a visual uncheck after a short delay
-    setResetChecks(prev => {
-        const copy = new Set(prev);
-        copy.add(id);
-        return copy;
-    });
-    setTimeout(() => setResetChecks(prev => {
-        const copy = new Set(prev);
-        copy.delete(id);
-        return copy;
-    }), 300);
+}
+
+// Handler that uses the native input so the checked state is visible, then programmatically unchecks it
+function handleCheckboxChange(listName, id, e) {
+    const checked = e.target.checked;
+    toggleComplete(listName, id, checked);
+    if (checked) {
+        // leave visually checked briefly, then uncheck
+        setTimeout(() => {
+            try { e.target.checked = false; } catch (err) { /* ignore */ }
+        }, 1500);
+    }
 }
 
 // Toast state for visual confirmation
@@ -171,7 +169,7 @@ useEffect(() => {
                     {recurringTasks.length === 0 && <p style={{textAlign: "center"}}>No recurring tasks</p>}
                     {recurringTasks.map((t, i) => (
                         <div className="task" key={`rec-${i}`}>
-                                <input className="form-check-input" type="checkbox" id={`recurring${i}`} onChange={e => toggleComplete('recurring', t.id, e.target.checked)} checked={resetChecks.has(t.id) ? false : undefined} />
+                                <input className="form-check-input" type="checkbox" id={`recurring${i}`} onChange={e => handleCheckboxChange('recurring', t.id, e)} />
                                 <div className="task-details">
                                     <label htmlFor={`recurring${i}`}>{t.title}</label>
                                     <p><i>Last completed: {t.last}</i></p>
@@ -188,7 +186,7 @@ useEffect(() => {
                     {normalTasks.length === 0 && <p style={{textAlign: "center"}}>No tasks</p>}
                     {normalTasks.map((t, i) => (
                         <div className="task" key={`norm-${i}`}>
-                            <input className="form-check-input" type="checkbox" id={`all${i}`} onChange={e => toggleComplete('normal', t.id, e.target.checked)} checked={resetChecks.has(t.id) ? false : undefined} />
+                            <input className="form-check-input" type="checkbox" id={`all${i}`} onChange={e => handleCheckboxChange('normal', t.id, e)} />
                             <div className="task-details">
                                 <label htmlFor={`all${i}`}>{t.title}</label>
                                 <p><i>Last completed: {t.last}</i></p>
