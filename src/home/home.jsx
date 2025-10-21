@@ -83,23 +83,26 @@ function closePopup() {
     // Edit modal state
     const [editPopup, setEditPopup] = useState({ show: false, id: null, title: '', details: '', recurring: false, list: null });
 
+    // Track checkbox temporary resets: when user checks, we flash the toast and then uncheck visually
+    const [resetChecks, setResetChecks] = useState(new Set());
+
     function openEdit(list, id) {
         const sourceList = list === 'recurring' ? recurringTasks : normalTasks;
         const item = sourceList.find(t => t.id === id);
         if (!item) return alert('Task not found');
-        setEditPopup({ show: true, id: item.id, title: item.title, details: item.details || '', recurring: list === 'recurring', list });
+        setEditPopup({ show: true, id: item.id, title: item.title, details: item.details || '', recurring: list === 'recurring', list, completedDates: Array.isArray(item.completedDates) ? [...item.completedDates] : [] });
     }
 
     function saveEdit(e) {
         e && e.preventDefault();
         if (!editPopup.id) return;
-        const updatedFields = { title: editPopup.title.trim(), details: editPopup.details.trim() };
+            const updatedFields = { title: editPopup.title.trim(), details: editPopup.details.trim(), completedDates: Array.isArray(editPopup.completedDates) ? [...editPopup.completedDates] : [] };
         if (editPopup.list === 'recurring') {
             setRecurringTasks(ts => ts.map(t => t.id === editPopup.id ? { ...t, ...updatedFields } : t));
         } else {
             setNormalTasks(ts => ts.map(t => t.id === editPopup.id ? { ...t, ...updatedFields } : t));
         }
-        setEditPopup({ show: false, id: null, title: '', details: '', recurring: false, list: null });
+            setEditPopup({ show: false, id: null, title: '', details: '', recurring: false, list: null, completedDates: [] });
     }
 
 // Record completion when a checkbox is checked. We'll append today's date and update last.
@@ -114,6 +117,17 @@ function toggleComplete(listName, id, checked) {
     // show a quick confirmation toast
     setToast({ show: true, message: 'Task completed! (' + formatDate(dateStr) + ')' });
     setTimeout(() => setToast({ show: false, message: '' }), 2000);
+    // schedule a visual uncheck after a short delay
+    setResetChecks(prev => {
+        const copy = new Set(prev);
+        copy.add(id);
+        return copy;
+    });
+    setTimeout(() => setResetChecks(prev => {
+        const copy = new Set(prev);
+        copy.delete(id);
+        return copy;
+    }), 300);
 }
 
 // Toast state for visual confirmation
@@ -157,7 +171,7 @@ useEffect(() => {
                     {recurringTasks.length === 0 && <p style={{textAlign: "center"}}>No recurring tasks</p>}
                     {recurringTasks.map((t, i) => (
                         <div className="task" key={`rec-${i}`}>
-                                <input className="form-check-input" type="checkbox" id={`recurring${i}`} onChange={e => toggleComplete('recurring', t.id, e.target.checked)} />
+                                <input className="form-check-input" type="checkbox" id={`recurring${i}`} onChange={e => toggleComplete('recurring', t.id, e.target.checked)} checked={resetChecks.has(t.id) ? false : undefined} />
                                 <div className="task-details">
                                     <label htmlFor={`recurring${i}`}>{t.title}</label>
                                     <p><i>Last completed: {t.last}</i></p>
@@ -174,7 +188,7 @@ useEffect(() => {
                     {normalTasks.length === 0 && <p style={{textAlign: "center"}}>No tasks</p>}
                     {normalTasks.map((t, i) => (
                         <div className="task" key={`norm-${i}`}>
-                            <input className="form-check-input" type="checkbox" id={`all${i}`} onChange={e => toggleComplete('normal', t.id, e.target.checked)} />
+                            <input className="form-check-input" type="checkbox" id={`all${i}`} onChange={e => toggleComplete('normal', t.id, e.target.checked)} checked={resetChecks.has(t.id) ? false : undefined} />
                             <div className="task-details">
                                 <label htmlFor={`all${i}`}>{t.title}</label>
                                 <p><i>Last completed: {t.last}</i></p>
@@ -231,6 +245,23 @@ useEffect(() => {
                         <input value={editPopup.title} onChange={e => setEditPopup(ep => ({ ...ep, title: e.target.value }))} required />
                         <label>Details</label>
                         <input value={editPopup.details} onChange={e => setEditPopup(ep => ({ ...ep, details: e.target.value }))} />
+                        <label style={{ marginTop: 8, fontWeight: 'bold' }}>Completed dates:</label>
+                        {editPopup.completedDates && editPopup.completedDates.length === 0 && <div><em>No recorded completions</em></div>}
+                        {editPopup.completedDates && editPopup.completedDates.length > 0 && (
+                            <ul>
+                                {editPopup.completedDates.map((d, idx) => (
+                                    <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <span>{formatDate(d)}</span>
+                                        <button
+                                            type="button"
+                                            className="date-remove-btn"
+                                            aria-label={`Remove ${formatDate(d)}`}
+                                            onClick={() => setEditPopup(ep => ({ ...ep, completedDates: ep.completedDates.filter((_,i) => i !== idx) }))}
+                                        >&times;</button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                         <div style={{ marginTop: 12 }}>
                             <button type="submit">Save</button>
                         </div>
