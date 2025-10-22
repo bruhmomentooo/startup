@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
-import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, NavLink, Route, Routes, Navigate } from 'react-router-dom';
 import { Home } from './home/home';
 import { Login } from './login/login';
 import { Tasks } from './tasks/tasks';
@@ -73,10 +73,18 @@ export default function App() {
                             <div className={`collapse navbar-collapse ${navOpen ? 'show' : ''}`} id="navbarNav">
                                 <ul className="navbar-nav ms-auto" onClick={closeNav}>
                                     <li className="nav-item">
-                                        <NavLink className="nav-link" to="/home">Home</NavLink>
+                                        {userName ? (
+                                            <NavLink className="nav-link" to="/home">Home</NavLink>
+                                        ) : (
+                                            <span className="nav-link disabled" aria-disabled="true">Home</span>
+                                        )}
                                     </li>
                                     <li className="nav-item">
-                                        <NavLink className="nav-link" to="/tasks">All Tasks</NavLink>
+                                        {userName ? (
+                                            <NavLink className="nav-link" to="/tasks">All Tasks</NavLink>
+                                        ) : (
+                                            <span className="nav-link disabled" aria-disabled="true">All Tasks</span>
+                                        )}
                                     </li>
                                     <li className="nav-item">
                                         {userName ? (
@@ -95,8 +103,8 @@ export default function App() {
 
                 <Routes>
                     <Route path="/" element={<Login onAuthChange={handleAuth} />} exact />
-                    <Route path="/home" element={<Home userName={userName} />} />
-                    <Route path="/tasks" element={<Tasks userName={userName} />} />
+                    <Route path="/home" element={userName ? <Home userName={userName} /> : <Navigate to="/" replace />} />
+                    <Route path="/tasks" element={userName ? <Tasks userName={userName} /> : <Navigate to="/" replace />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>
 
