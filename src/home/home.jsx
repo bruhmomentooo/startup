@@ -28,24 +28,24 @@ const [normalTasks, setNormalTasks] = useState(() => {
 });
 
 // temporary holder used for the create-modal
-const [newTask, setNewTask] = useState({ title: '', details: '', recurring: false });
+const [newTask, setNewTask] = useState({ title: '', details: '', recurring: false, frequency: 'Every Day' });
 
 // Create-modal state
-const [createPopup, setCreatePopup] = useState({ show: false, title: '', details: '', recurring: false });
+const [createPopup, setCreatePopup] = useState({ show: false, title: '', details: '', recurring: false, frequency: 'Every Day' });
 
 function createTask(e) {
     // keep compat with previous form-based call, but prefer modal flow
     e && e.preventDefault();
     const source = e && e._isCreateModal ? createPopup : newTask;
     if (!source.title || !source.title.trim()) return;
-        const task = { id: `${source.recurring ? 'r' : 'n'}-${Date.now()}-${Math.floor(Math.random()*1000)}`, title: source.title.trim(), details: (source.details||'').trim(), last: 'Never', completedDates: [] };
+        const task = { id: `${source.recurring ? 'r' : 'n'}-${Date.now()}-${Math.floor(Math.random()*1000)}`, title: source.title.trim(), details: (source.details||'').trim(), last: 'Never', completedDates: [], frequency: source.recurring ? (source.frequency || 'Every Day') : '' };
     if (source.recurring) {
         setRecurringTasks(t => [task, ...t]);
     } else {
         setNormalTasks(t => [task, ...t]);
     }
-    setNewTask({ title: '', details: '', recurring: false });
-    setCreatePopup({ show: false, title: '', details: '', recurring: false });
+    setNewTask({ title: '', details: '', recurring: false, frequency: 'Every Day' });
+    setCreatePopup({ show: false, title: '', details: '', recurring: false, frequency: 'Every Day' });
 }
 
 function removeTask(listName, index) {
@@ -81,31 +81,36 @@ function closePopup() {
 }
 
     // Edit modal state
-    const [editPopup, setEditPopup] = useState({ show: false, id: null, title: '', details: '', recurring: false, list: null });
+    const [editPopup, setEditPopup] = useState({ show: false, id: null, title: '', details: '', recurring: false, list: null, frequency: 'Every Day' });
 
     function openEdit(list, id) {
         const sourceList = list === 'recurring' ? recurringTasks : normalTasks;
         const item = sourceList.find(t => t.id === id);
         if (!item) return alert('Task not found');
-        setEditPopup({ show: true, id: item.id, title: item.title, details: item.details || '', recurring: list === 'recurring', list, completedDates: Array.isArray(item.completedDates) ? [...item.completedDates] : [] });
+        setEditPopup({ show: true, id: item.id, title: item.title, details: item.details || '', recurring: list === 'recurring', list, completedDates: Array.isArray(item.completedDates) ? [...item.completedDates] : [], frequency: item.frequency || 'Every Day' });
     }
 
     function saveEdit(e) {
         e && e.preventDefault();
         if (!editPopup.id) return;
-            const updatedFields = { title: editPopup.title.trim(), details: editPopup.details.trim(), completedDates: Array.isArray(editPopup.completedDates) ? [...editPopup.completedDates] : [] };
+            const updatedFields = { title: editPopup.title.trim(), details: editPopup.details.trim(), completedDates: Array.isArray(editPopup.completedDates) ? [...editPopup.completedDates] : [], frequency: editPopup.recurring ? (editPopup.frequency || 'Every Day') : '' };
         if (editPopup.list === 'recurring') {
             setRecurringTasks(ts => ts.map(t => t.id === editPopup.id ? { ...t, ...updatedFields } : t));
         } else {
             setNormalTasks(ts => ts.map(t => t.id === editPopup.id ? { ...t, ...updatedFields } : t));
         }
-            setEditPopup({ show: false, id: null, title: '', details: '', recurring: false, list: null, completedDates: [] });
+            setEditPopup({ show: false, id: null, title: '', details: '', recurring: false, list: null, completedDates: [], frequency: 'Every Day' });
     }
 
 // Record completion when a checkbox is checked. We'll append today's date and update last.
 function toggleComplete(listName, id, checked) {
     if (!checked) return; // only record on check
-    const dateStr = (new Date()).toISOString().slice(0,10);
+    // build a local date string YYYY-MM-DD (avoid toISOString which uses UTC and can shift the day)
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const dateStr = `${yyyy}-${mm}-${dd}`;
     if (listName === 'recurring') {
         setRecurringTasks(ts => ts.map(t => t.id === id ? { ...t, completedDates: Array.isArray(t.completedDates) ? [...t.completedDates, dateStr] : [dateStr], last: dateStr } : t));
     } else {
@@ -134,6 +139,12 @@ const [toast, setToast] = useState({ show: false, message: '' });
 // small friendly date formatter
 function formatDate(isoDate) {
     try {
+        // If isoDate is in YYYY-MM-DD format, parse it as a local date to avoid timezone shifts
+        if (typeof isoDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
+            const [y, m, dPart] = isoDate.split('-').map(s => parseInt(s, 10));
+            const d = new Date(y, m - 1, dPart);
+            return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        }
         const d = new Date(isoDate);
         return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
     } catch (e) { return isoDate; }
@@ -172,7 +183,7 @@ useEffect(() => {
                                 <input className="form-check-input" type="checkbox" id={`recurring${i}`} onChange={e => handleCheckboxChange('recurring', t.id, e)} />
                                 <div className="task-details">
                                     <label htmlFor={`recurring${i}`}>{t.title}</label>
-                                    <p><i>Last completed: {t.last}</i></p>
+                                    <p><i>Last completed: {t.last}</i>{t.frequency ? <span style={{ marginLeft: 8 }}>• {t.frequency}</span> : null}</p>
                                 </div>
                                 <button type="button" onClick={() => viewTask(t)}>View</button>
                                 <button type="button" onClick={() => openEdit('recurring', t.id)}>Edit</button>
@@ -189,7 +200,7 @@ useEffect(() => {
                             <input className="form-check-input" type="checkbox" id={`all${i}`} onChange={e => handleCheckboxChange('normal', t.id, e)} />
                             <div className="task-details">
                                 <label htmlFor={`all${i}`}>{t.title}</label>
-                                <p><i>Last completed: {t.last}</i></p>
+                                <p><i>Last completed: {t.last}</i>{t.frequency ? <span style={{ marginLeft: 8 }}>• {t.frequency}</span> : null}</p>
                             </div>
                             <button type="button" onClick={() => viewTask(t)}>View</button>
                             <button type="button" onClick={() => openEdit('normal', t.id)}>Edit</button>
@@ -226,6 +237,17 @@ useEffect(() => {
                         <label>Details</label>
                         <input value={createPopup.details} onChange={e => setCreatePopup(cp => ({ ...cp, details: e.target.value }))} />
                         <label><input type="checkbox" checked={createPopup.recurring} onChange={e => setCreatePopup(cp => ({ ...cp, recurring: e.target.checked }))} /> Recurring?</label>
+                        {createPopup.recurring && (
+                            <label style={{ display: 'block', marginTop: 8 }}>
+                                Frequency
+                                <select value={createPopup.frequency} onChange={e => setCreatePopup(cp => ({ ...cp, frequency: e.target.value }))} style={{ marginLeft: 8 }}>
+                                    <option>Every Day</option>
+                                    <option>Every Week</option>
+                                    <option>Every Month</option>
+                                    <option>Every Year</option>
+                                </select>
+                            </label>
+                        )}
                         <div style={{ marginTop: 12 }}>
                             <button type="submit">Create</button>
                         </div>
@@ -244,6 +266,17 @@ useEffect(() => {
                         <label>Details</label>
                         <input value={editPopup.details} onChange={e => setEditPopup(ep => ({ ...ep, details: e.target.value }))} />
                         <label style={{ marginTop: 8, fontWeight: 'bold' }}>Completed dates:</label>
+                        <div style={{ marginTop: 8 }}>
+                            <label><input type="checkbox" checked={editPopup.recurring} onChange={e => setEditPopup(ep => ({ ...ep, recurring: e.target.checked }))} /> Recurring?</label>
+                            {editPopup.recurring && (
+                                <select value={editPopup.frequency} onChange={e => setEditPopup(ep => ({ ...ep, frequency: e.target.value }))} style={{ marginLeft: 8 }}>
+                                    <option>Every Day</option>
+                                    <option>Every Week</option>
+                                    <option>Every Month</option>
+                                    <option>Every Year</option>
+                                </select>
+                            )}
+                        </div>
                         {editPopup.completedDates && editPopup.completedDates.length === 0 && <div><em>No recorded completions</em></div>}
                         {editPopup.completedDates && editPopup.completedDates.length > 0 && (
                             <ul>
