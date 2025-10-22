@@ -2,29 +2,41 @@ import React, { useState, useEffect } from 'react';
 import './home-style.css';
 import './tasks_modal.css';
 
-export function Home() {
+export function Home({ userName }) {
+    // if no user is logged in, show a message
+    if (!userName) {
+        return (
+            <main style={{ padding: 24 }}>
+                <h2>Please log in</h2>
+                <p>You must be logged in to view your tasks. Use the Login link to sign in or create an account.</p>
+            </main>
+        );
+    }
 // Sidebar Functions
 // Load from localStorage if available, otherwise seed with defaults
+const recurringKey = `startup:${userName}:recurringTasks`;
+const normalKey = `startup:${userName}:normalTasks`;
+
 const [recurringTasks, setRecurringTasks] = useState(() => {
     try {
-        const raw = localStorage.getItem('recurringTasks');
+        const raw = localStorage.getItem(recurringKey);
         if (raw) {
             const parsed = JSON.parse(raw);
             if (Array.isArray(parsed)) return parsed;
         }
     } catch (e) { /* ignore malformed data */ }
-    return []; // start empty for a fresh login
+    return []; // start empty for a fresh user
 });
 
 const [normalTasks, setNormalTasks] = useState(() => {
     try {
-        const raw = localStorage.getItem('normalTasks');
+        const raw = localStorage.getItem(normalKey);
         if (raw) {
             const parsed = JSON.parse(raw);
             if (Array.isArray(parsed)) return parsed;
         }
     } catch (e) { /* ignore malformed data */ }
-    return []; // start empty for a fresh login
+    return []; // start empty for a fresh user
 });
 
 // temporary holder used for the create-modal
@@ -154,16 +166,16 @@ function formatDate(isoDate) {
 useEffect(() => {
     try {
         const toSave = Array.isArray(recurringTasks) ? recurringTasks.filter(t => t && typeof t === 'object') : [];
-        localStorage.setItem('recurringTasks', JSON.stringify(toSave));
+        localStorage.setItem(recurringKey, JSON.stringify(toSave));
     } catch (e) {}
-}, [recurringTasks]);
+}, [recurringTasks, recurringKey]);
 
 useEffect(() => {
     try {
         const toSave = Array.isArray(normalTasks) ? normalTasks.filter(t => t && typeof t === 'object') : [];
-        localStorage.setItem('normalTasks', JSON.stringify(toSave));
+        localStorage.setItem(normalKey, JSON.stringify(toSave));
     } catch (e) {}
-}, [normalTasks]);
+}, [normalTasks, normalKey]);
 
   return (
     <main>

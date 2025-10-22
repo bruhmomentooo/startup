@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
@@ -8,10 +8,46 @@ import { Login } from './login/login';
 import { Tasks } from './tasks/tasks';
 
 export default function App() {
+    // current logged-in user (simple string email). persisted to localStorage as 'currentUser'
+    const [userName, setUserName] = useState(() => {
+        try {
+            return localStorage.getItem('currentUser') || '';
+        } catch (e) { return ''; }
+    });
+
     const [navOpen, setNavOpen] = useState(false);
 
     const toggleNav = () => setNavOpen(o => !o);
     const closeNav = () => setNavOpen(false);
+
+    // persist current user
+    useEffect(() => {
+        try { if (userName) localStorage.setItem('currentUser', userName); else localStorage.removeItem('currentUser'); } catch (e) {}
+    }, [userName]);
+
+    // Simple auth handler: login or create account. We store a minimal users map in localStorage under 'users'
+    function handleAuth(email, password, create = false) {
+        if (!email) return { success: false, message: 'Email required' };
+        // load users
+        let users = {};
+        try { users = JSON.parse(localStorage.getItem('users') || '{}'); } catch (e) { users = {}; }
+        if (create) {
+            if (users[email]) return { success: false, message: 'Account already exists' };
+            users[email] = { password };
+            try { localStorage.setItem('users', JSON.stringify(users)); } catch (e) {}
+            setUserName(email);
+            return { success: true };
+        }
+        // login
+        if (!users[email]) return { success: false, message: 'No account found' };
+        if (users[email].password !== password) return { success: false, message: 'Invalid password' };
+        setUserName(email);
+        return { success: true };
+    }
+
+    function handleLogout() {
+        setUserName('');
+    }
 
     return (
         <BrowserRouter>
@@ -43,7 +79,13 @@ export default function App() {
                                         <NavLink className="nav-link" to="/tasks">All Tasks</NavLink>
                                     </li>
                                     <li className="nav-item">
-                                        <NavLink className="nav-link" to="/">Logout</NavLink>
+                                        {userName ? (
+                                            <NavLink className="nav-link" to="/" onClick={() => { handleLogout(); }}>
+                                                Logout
+                                            </NavLink>
+                                        ) : (
+                                            <NavLink className="nav-link" to="/">Login</NavLink>
+                                        )}
                                     </li>
                                 </ul>
                             </div>
@@ -52,21 +94,9 @@ export default function App() {
                 </header>
 
                 <Routes>
-                    <Route path="/"
-                    element={
-                        <Login
-                            /*userName={userName}
-                            authState={authState}
-                            onAuthChange={(userName, authState) => {
-                                setAuthState(authState);
-                                setUserName(userName);
-                            }}*/
-                        />
-                    }
-                    exact
-                    />
-                    <Route path="/home" element={<Home />} />
-                    <Route path="/tasks" element={<Tasks />} />
+                    <Route path="/" element={<Login onAuthChange={handleAuth} />} exact />
+                    <Route path="/home" element={<Home userName={userName} />} />
+                    <Route path="/tasks" element={<Tasks userName={userName} />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>
 
