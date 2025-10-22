@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function Tasks() {
+export function About() {
   return (
     <main>
       <div className="sidebar">

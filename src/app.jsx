@@ -5,7 +5,7 @@ import './app.css';
 import { BrowserRouter, NavLink, Route, Routes, Navigate } from 'react-router-dom';
 import { Home } from './home/home';
 import { Login } from './login/login';
-import { Tasks } from './tasks/tasks';
+import { About } from './about/about';
 
 export default function App() {
     // current logged-in user (simple string email). persisted to localStorage as 'currentUser'
@@ -80,11 +80,7 @@ export default function App() {
                                         )}
                                     </li>
                                     <li className="nav-item">
-                                        {userName ? (
-                                            <NavLink className="nav-link" to="/tasks">All Tasks</NavLink>
-                                        ) : (
-                                            <span className="nav-link disabled" aria-disabled="true">All Tasks</span>
-                                        )}
+                                        <NavLink className="nav-link" to="/about">About</NavLink>
                                     </li>
                                     <li className="nav-item">
                                         {userName ? (
@@ -104,7 +100,7 @@ export default function App() {
                 <Routes>
                     <Route path="/" element={<Login onAuthChange={handleAuth} />} exact />
                     <Route path="/home" element={userName ? <Home userName={userName} /> : <Navigate to="/" replace />} />
-                    <Route path="/tasks" element={userName ? <Tasks userName={userName} /> : <Navigate to="/" replace />} />
+                    <Route path="/about" element={<About userName={userName} />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>
 
