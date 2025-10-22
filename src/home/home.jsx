@@ -65,10 +65,10 @@ function manageNotifications() {
 }
 
 // Task Functions
-const [popup, setPopup] = useState({ show: false, title: '', details: '', completedDates: [] });
+const [popup, setPopup] = useState({ show: false, title: '', details: '', completedDates: [], frequency: '' });
 
 function viewTask(task) {
-    setPopup({ show: true, title: task.title, details: task.details, completedDates: task.completedDates || [] });
+    setPopup({ show: true, title: task.title, details: task.details, completedDates: task.completedDates || [], frequency: task.frequency || '' });
 }
 
 function editTask(title) {
@@ -77,7 +77,7 @@ function editTask(title) {
 }
 
 function closePopup() {
-    setPopup({ show: false, title: '', details: '', completedDates: [] });
+    setPopup({ show: false, title: '', details: '', completedDates: [], frequency: '' });
 }
 
     // Edit modal state
@@ -183,7 +183,7 @@ useEffect(() => {
                                 <input className="form-check-input" type="checkbox" id={`recurring${i}`} onChange={e => handleCheckboxChange('recurring', t.id, e)} />
                                 <div className="task-details">
                                     <label htmlFor={`recurring${i}`}>{t.title}</label>
-                                    <p><i>Last completed: {t.last}</i>{t.frequency ? <span style={{ marginLeft: 8 }}>• {t.frequency}</span> : null}</p>
+                                    <p><i>Last completed: {t.last}</i></p>
                                 </div>
                                 <button type="button" onClick={() => viewTask(t)}>View</button>
                                 <button type="button" onClick={() => openEdit('recurring', t.id)}>Edit</button>
@@ -200,7 +200,7 @@ useEffect(() => {
                             <input className="form-check-input" type="checkbox" id={`all${i}`} onChange={e => handleCheckboxChange('normal', t.id, e)} />
                             <div className="task-details">
                                 <label htmlFor={`all${i}`}>{t.title}</label>
-                                <p><i>Last completed: {t.last}</i>{t.frequency ? <span style={{ marginLeft: 8 }}>• {t.frequency}</span> : null}</p>
+                                <p><i>Last completed: {t.last}</i></p>
                             </div>
                             <button type="button" onClick={() => viewTask(t)}>View</button>
                             <button type="button" onClick={() => openEdit('normal', t.id)}>Edit</button>
@@ -215,6 +215,9 @@ useEffect(() => {
                     <span className="close" onClick={closePopup}>&times;</span>
                         <h2 id="popup-title">{popup.title}</h2>
                         <div id="popup-details">{popup.details}</div>
+                        {popup.frequency && (
+                            <p style={{ marginTop: 8 }}><strong>Frequency:</strong> {popup.frequency}</p>
+                        )}
                         {popup.completedDates && popup.completedDates.length > 0 && (
                             <div style={{ marginTop: 12 }}>
                                 <strong>Times completed:</strong>

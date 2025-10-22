@@ -268,3 +268,9 @@ main {
         align-items: center;
         justify-content: center;
     }
+
+.task-frequency {
+    color: #555;
+    font-size: 13px;
+    margin-top: 4px;
+}
