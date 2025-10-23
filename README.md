@@ -101,8 +101,8 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **All functionality implemented or mocked out** - I did not complete this part of the deliverable.
-- [ ] **Hooks** - I did not complete this part of the deliverable.
+- [x] **All functionality implemented or mocked out** - The main concept of the the task tracker is mapped out and fully functional.
+- [x] **Hooks** - The website uses multiple hooks in various locations, such as the buttons that use popup menus and that store data of the tasks that the user puts.
 
 ## 🚀 Service deliverable
 
