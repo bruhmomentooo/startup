@@ -69,11 +69,13 @@ function removeTask(listName, index) {
 }
 
 function addToGoogleCalendar() {
-    alert('Add to Google Calendar (not implemented)');
+    // API Placeholder function
+    alert('Add to Google Calendar (not implemented yet)');
 }
 
 function manageNotifications() {
-    alert('Manage notifications (not implemented)');
+    // Websocket Placeholder function
+    alert('Manage notifications (not implemented yet)');
 }
 
 // Task Functions
