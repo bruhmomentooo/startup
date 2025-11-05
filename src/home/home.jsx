@@ -22,22 +22,36 @@ function createTask(e) {
     e && e.preventDefault();
     const source = e && e._isCreateModal ? createPopup : newTask;
     if (!source.title || !source.title.trim()) return;
-        const task = { id: `${source.recurring ? 'r' : 'n'}-${Date.now()}-${Math.floor(Math.random()*1000)}`, title: source.title.trim(), details: (source.details||'').trim(), last: 'Never', completedDates: [], frequency: source.recurring ? (source.frequency || 'Every Day') : '' };
-    if (source.recurring) {
-        setRecurringTasks(t => [task, ...t]);
-    } else {
-        setNormalTasks(t => [task, ...t]);
-    }
+    // create via service
+    fetch(`${API_BASE}/api/tasks`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: source.title.trim(), details: (source.details||'').trim(), recurring: !!source.recurring, frequency: source.recurring ? (source.frequency || 'Every Day') : '' })
+    }).then(async res => {
+        if (!res.ok) throw new Error(await res.text());
+        const created = await res.json();
+        const task = { ...created, last: created.completedDates && created.completedDates.length ? created.completedDates[created.completedDates.length-1] : 'Never' };
+        if (task.recurring) setRecurringTasks(t => [task, ...t]); else setNormalTasks(t => [task, ...t]);
+    }).catch(err => {
+        console.error('Create failed', err);
+        alert('Failed to create task');
+    });
     setNewTask({ title: '', details: '', recurring: false, frequency: 'Every Day' });
     setCreatePopup({ show: false, title: '', details: '', recurring: false, frequency: 'Every Day' });
 }
 
 function removeTask(listName, index) {
-    if (listName === 'recurring') {
-        setRecurringTasks(t => t.filter((_, i) => i !== index));
-    } else {
-        setNormalTasks(t => t.filter((_, i) => i !== index));
-    }
+    const sourceList = listName === 'recurring' ? recurringTasks : normalTasks;
+    const item = sourceList[index];
+    if (!item) return;
+    fetch(`${API_BASE}/api/tasks/${item.id}`, { method: 'DELETE', credentials: 'include' }).then(async res => {
+        if (!res.ok) throw new Error(await res.text());
+        if (listName === 'recurring') setRecurringTasks(t => t.filter((_, i) => i !== index)); else setNormalTasks(t => t.filter((_, i) => i !== index));
+    }).catch(err => {
+        console.error('Delete failed', err);
+        alert('Failed to delete task');
+    });
 }
 
 function addToGoogleCalendar() {
