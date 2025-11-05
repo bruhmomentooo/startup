@@ -13,3 +13,6 @@ node_modules
 npm-debug.log*
 .vscode
 dbConfig.json
+
+# Ignore runtime data created by the local service
+service/data/
