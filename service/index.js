@@ -19,15 +19,63 @@ app.use(express.static(staticRoot, { index: 'index.html' }));
 // Simple health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
-// Example API placeholder (in-memory) -- optional, can be expanded later
+// Example API placeholder (in-memory) -- simple REST for tasks
 const tasks = [];
-app.get('/api/tasks', (req, res) => res.json(tasks));
+
+// List all tasks
+app.get('/api/tasks', (req, res) => {
+	res.json(tasks);
+});
+
+// Create a task
 app.post('/api/tasks', (req, res) => {
 	const { title, details, recurring, frequency } = req.body || {};
-	if (!title) return res.status(400).json({ error: 'title required' });
-	const t = { id: `t-${Date.now()}`, title, details: details || '', recurring: !!recurring, frequency: recurring ? (frequency || 'Every Day') : '' };
+	if (!title || typeof title !== 'string' || !title.trim()) return res.status(400).json({ error: 'title required' });
+	const t = {
+		id: `t-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+		title: title.trim(),
+		details: (details || '').toString(),
+		recurring: !!recurring,
+		frequency: recurring ? (frequency || 'Every Day') : '',
+		createdAt: new Date().toISOString(),
+		completedDates: []
+	};
 	tasks.push(t);
 	res.status(201).json(t);
+});
+
+// Get single task
+app.get('/api/tasks/:id', (req, res) => {
+	const id = req.params.id;
+	const t = tasks.find(x => x.id === id);
+	if (!t) return res.status(404).json({ error: 'not found' });
+	res.json(t);
+});
+
+// Update task (partial updates allowed)
+app.put('/api/tasks/:id', (req, res) => {
+	const id = req.params.id;
+	const idx = tasks.findIndex(x => x.id === id);
+	if (idx === -1) return res.status(404).json({ error: 'not found' });
+	const { title, details, recurring, frequency, completedDates } = req.body || {};
+	const existing = tasks[idx];
+	if (typeof title === 'string' && title.trim()) existing.title = title.trim();
+	if (typeof details === 'string') existing.details = details;
+	if (typeof recurring === 'boolean') existing.recurring = recurring;
+	if (typeof frequency === 'string') existing.frequency = frequency;
+	if (Array.isArray(completedDates)) existing.completedDates = completedDates;
+	existing.updatedAt = new Date().toISOString();
+	tasks[idx] = existing;
+	res.json(existing);
+});
+
+// Delete task
+app.delete('/api/tasks/:id', (req, res) => {
+	const id = req.params.id;
+	const idx = tasks.findIndex(x => x.id === id);
+	if (idx === -1) return res.status(404).json({ error: 'not found' });
+	const removed = tasks.splice(idx, 1)[0];
+	res.json(removed);
 });
 
 // For SPA client-side routing: return index.html for unknown GET routes (except /api)
