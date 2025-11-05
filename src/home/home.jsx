@@ -91,13 +91,25 @@ function closePopup() {
     function saveEdit(e) {
         e && e.preventDefault();
         if (!editPopup.id) return;
-            const updatedFields = { title: editPopup.title.trim(), details: editPopup.details.trim(), completedDates: Array.isArray(editPopup.completedDates) ? [...editPopup.completedDates] : [], frequency: editPopup.recurring ? (editPopup.frequency || 'Every Day') : '' };
-        if (editPopup.list === 'recurring') {
-            setRecurringTasks(ts => ts.map(t => t.id === editPopup.id ? { ...t, ...updatedFields } : t));
-        } else {
-            setNormalTasks(ts => ts.map(t => t.id === editPopup.id ? { ...t, ...updatedFields } : t));
-        }
-            setEditPopup({ show: false, id: null, title: '', details: '', recurring: false, list: null, completedDates: [], frequency: 'Every Day' });
+        const updatedFields = { title: editPopup.title.trim(), details: editPopup.details.trim(), completedDates: Array.isArray(editPopup.completedDates) ? [...editPopup.completedDates] : [], frequency: editPopup.recurring ? (editPopup.frequency || 'Every Day') : '' };
+        fetch(`${API_BASE}/api/tasks/${editPopup.id}`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedFields)
+        }).then(async res => {
+            if (!res.ok) throw new Error(await res.text());
+            const updated = await res.json();
+            if (editPopup.list === 'recurring') {
+                setRecurringTasks(ts => ts.map(t => t.id === editPopup.id ? { ...t, ...updated } : t));
+            } else {
+                setNormalTasks(ts => ts.map(t => t.id === editPopup.id ? { ...t, ...updated } : t));
+            }
+        }).catch(err => {
+            console.error('Save failed', err);
+            alert('Failed to save');
+        });
+        setEditPopup({ show: false, id: null, title: '', details: '', recurring: false, list: null, completedDates: [], frequency: 'Every Day' });
     }
 
 // Record completion when a checkbox is checked. We'll append today's date and update last.
@@ -109,11 +121,28 @@ function toggleComplete(listName, id, checked) {
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const dd = String(now.getDate()).padStart(2, '0');
     const dateStr = `${yyyy}-${mm}-${dd}`;
-    if (listName === 'recurring') {
-        setRecurringTasks(ts => ts.map(t => t.id === id ? { ...t, completedDates: Array.isArray(t.completedDates) ? [...t.completedDates, dateStr] : [dateStr], last: dateStr } : t));
-    } else {
-        setNormalTasks(ts => ts.map(t => t.id === id ? { ...t, completedDates: Array.isArray(t.completedDates) ? [...t.completedDates, dateStr] : [dateStr], last: dateStr } : t));
-    }
+    // update via backend
+    const list = listName === 'recurring' ? recurringTasks : normalTasks;
+    const item = list.find(t => t.id === id);
+    if (!item) return;
+    const updatedCompleted = Array.isArray(item.completedDates) ? [...item.completedDates, dateStr] : [dateStr];
+    fetch(`${API_BASE}/api/tasks/${id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completedDates: updatedCompleted })
+    }).then(async res => {
+        if (!res.ok) throw new Error(await res.text());
+        const updated = await res.json();
+        if (listName === 'recurring') {
+            setRecurringTasks(ts => ts.map(t => t.id === id ? { ...t, completedDates: updated.completedDates || updatedCompleted, last: dateStr } : t));
+        } else {
+            setNormalTasks(ts => ts.map(t => t.id === id ? { ...t, completedDates: updated.completedDates || updatedCompleted, last: dateStr } : t));
+        }
+    }).catch(err => {
+        console.error('Complete update failed', err);
+        alert('Failed to record completion');
+    });
     // show a quick confirmation toast
     setToast({ show: true, message: 'Task completed! (' + formatDate(dateStr) + ')' });
     setTimeout(() => setToast({ show: false, message: '' }), 2000);
@@ -148,20 +177,26 @@ function formatDate(isoDate) {
     } catch (e) { return isoDate; }
 }
 
-// Persist to localStorage whenever the lists change
+// Load tasks from backend on mount
 useEffect(() => {
-    try {
-        const toSave = Array.isArray(recurringTasks) ? recurringTasks.filter(t => t && typeof t === 'object') : [];
-        localStorage.setItem('recurringTasks', JSON.stringify(toSave));
-    } catch (e) {}
-}, [recurringTasks]);
+    // If there's no logged-in user, clear the lists and do nothing.
+    if (!user || !user.id) {
+        setRecurringTasks([]);
+        setNormalTasks([]);
+        return;
+    }
 
-useEffect(() => {
-    try {
-        const toSave = Array.isArray(normalTasks) ? normalTasks.filter(t => t && typeof t === 'object') : [];
-        localStorage.setItem('normalTasks', JSON.stringify(toSave));
-    } catch (e) {}
-}, [normalTasks]);
+    fetch(`${API_BASE}/api/tasks`, { credentials: 'include' }).then(async res => {
+        if (!res.ok) throw new Error('Failed to load tasks for user');
+        const all = await res.json();
+        const recurring = all.filter(t => t.recurring);
+        const normal = all.filter(t => !t.recurring);
+        setRecurringTasks(recurring.map(t => ({ ...t, last: (t.completedDates && t.completedDates.length) ? t.completedDates[t.completedDates.length - 1] : 'Never' })));
+        setNormalTasks(normal.map(t => ({ ...t, last: (t.completedDates && t.completedDates.length) ? t.completedDates[t.completedDates.length - 1] : 'Never' })));
+    }).catch(err => {
+        console.error('Load tasks failed', err);
+    });
+}, [user]);
 
   return (
     <main>
