@@ -2,30 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './home-style.css';
 import './tasks_modal.css';
 
-export function Home() {
-// Sidebar Functions
-// Load from localStorage if available, otherwise seed with defaults
-const [recurringTasks, setRecurringTasks] = useState(() => {
-    try {
-        const raw = localStorage.getItem('recurringTasks');
-        if (raw) {
-            const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed)) return parsed;
-        }
-    } catch (e) { /* ignore malformed data */ }
-    return []; // start empty for a fresh login
-});
+// API base: when developing with Vite (different port), point to backend on 4000
+const API_BASE = (typeof window !== 'undefined' && window.location.hostname === 'localhost' && window.location.port !== '4000') ? 'http://localhost:4000' : '';
 
-const [normalTasks, setNormalTasks] = useState(() => {
-    try {
-        const raw = localStorage.getItem('normalTasks');
-        if (raw) {
-            const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed)) return parsed;
-        }
-    } catch (e) { /* ignore malformed data */ }
-    return []; // start empty for a fresh login
-});
+export function Home({ user }) {
+// Sidebar Functions
+// Tasks are stored on the server; keep local state only and load on mount
+const [recurringTasks, setRecurringTasks] = useState([]);
+const [normalTasks, setNormalTasks] = useState([]);
 
 // temporary holder used for the create-modal
 const [newTask, setNewTask] = useState({ title: '', details: '', recurring: false, frequency: 'Every Day' });
