@@ -2,41 +2,29 @@ import React, { useState, useEffect } from 'react';
 import './home-style.css';
 import './tasks_modal.css';
 
-export function Home({ userName }) {
-    // if no user is logged in, show a message
-    if (!userName) {
-        return (
-            <main style={{ padding: 24 }}>
-                <h2>Please log in</h2>
-                <p>You must be logged in to view your tasks. Use the Login link to sign in or create an account.</p>
-            </main>
-        );
-    }
+export function Home() {
 // Sidebar Functions
 // Load from localStorage if available, otherwise seed with defaults
-const recurringKey = `startup:${userName}:recurringTasks`;
-const normalKey = `startup:${userName}:normalTasks`;
-
 const [recurringTasks, setRecurringTasks] = useState(() => {
     try {
-        const raw = localStorage.getItem(recurringKey);
+        const raw = localStorage.getItem('recurringTasks');
         if (raw) {
             const parsed = JSON.parse(raw);
             if (Array.isArray(parsed)) return parsed;
         }
     } catch (e) { /* ignore malformed data */ }
-    return []; // start empty for a fresh user
+    return []; // start empty for a fresh login
 });
 
 const [normalTasks, setNormalTasks] = useState(() => {
     try {
-        const raw = localStorage.getItem(normalKey);
+        const raw = localStorage.getItem('normalTasks');
         if (raw) {
             const parsed = JSON.parse(raw);
             if (Array.isArray(parsed)) return parsed;
         }
     } catch (e) { /* ignore malformed data */ }
-    return []; // start empty for a fresh user
+    return []; // start empty for a fresh login
 });
 
 // temporary holder used for the create-modal
@@ -69,20 +57,18 @@ function removeTask(listName, index) {
 }
 
 function addToGoogleCalendar() {
-    // API Placeholder function
-    alert('Add to Google Calendar (not implemented yet)');
+    alert('Add to Google Calendar (not implemented)');
 }
 
 function manageNotifications() {
-    // Websocket Placeholder function
-    alert('Manage notifications (not implemented yet)');
+    alert('Manage notifications (not implemented)');
 }
 
 // Task Functions
-const [popup, setPopup] = useState({ show: false, title: '', details: '', completedDates: [], frequency: '' });
+const [popup, setPopup] = useState({ show: false, title: '', details: '', completedDates: [] });
 
 function viewTask(task) {
-    setPopup({ show: true, title: task.title, details: task.details, completedDates: task.completedDates || [], frequency: task.frequency || '' });
+    setPopup({ show: true, title: task.title, details: task.details, completedDates: task.completedDates || [] });
 }
 
 function editTask(title) {
@@ -91,7 +77,7 @@ function editTask(title) {
 }
 
 function closePopup() {
-    setPopup({ show: false, title: '', details: '', completedDates: [], frequency: '' });
+    setPopup({ show: false, title: '', details: '', completedDates: [] });
 }
 
     // Edit modal state
@@ -168,16 +154,16 @@ function formatDate(isoDate) {
 useEffect(() => {
     try {
         const toSave = Array.isArray(recurringTasks) ? recurringTasks.filter(t => t && typeof t === 'object') : [];
-        localStorage.setItem(recurringKey, JSON.stringify(toSave));
+        localStorage.setItem('recurringTasks', JSON.stringify(toSave));
     } catch (e) {}
-}, [recurringTasks, recurringKey]);
+}, [recurringTasks]);
 
 useEffect(() => {
     try {
         const toSave = Array.isArray(normalTasks) ? normalTasks.filter(t => t && typeof t === 'object') : [];
-        localStorage.setItem(normalKey, JSON.stringify(toSave));
+        localStorage.setItem('normalTasks', JSON.stringify(toSave));
     } catch (e) {}
-}, [normalTasks, normalKey]);
+}, [normalTasks]);
 
   return (
     <main>
@@ -197,7 +183,7 @@ useEffect(() => {
                                 <input className="form-check-input" type="checkbox" id={`recurring${i}`} onChange={e => handleCheckboxChange('recurring', t.id, e)} />
                                 <div className="task-details">
                                     <label htmlFor={`recurring${i}`}>{t.title}</label>
-                                    <p><i>Last completed: {t.last}</i></p>
+                                    <p><i>Last completed: {t.last}</i>{t.frequency ? <span style={{ marginLeft: 8 }}>• {t.frequency}</span> : null}</p>
                                 </div>
                                 <button type="button" onClick={() => viewTask(t)}>View</button>
                                 <button type="button" onClick={() => openEdit('recurring', t.id)}>Edit</button>
@@ -214,7 +200,7 @@ useEffect(() => {
                             <input className="form-check-input" type="checkbox" id={`all${i}`} onChange={e => handleCheckboxChange('normal', t.id, e)} />
                             <div className="task-details">
                                 <label htmlFor={`all${i}`}>{t.title}</label>
-                                <p><i>Last completed: {t.last}</i></p>
+                                <p><i>Last completed: {t.last}</i>{t.frequency ? <span style={{ marginLeft: 8 }}>• {t.frequency}</span> : null}</p>
                             </div>
                             <button type="button" onClick={() => viewTask(t)}>View</button>
                             <button type="button" onClick={() => openEdit('normal', t.id)}>Edit</button>
@@ -229,9 +215,6 @@ useEffect(() => {
                     <span className="close" onClick={closePopup}>&times;</span>
                         <h2 id="popup-title">{popup.title}</h2>
                         <div id="popup-details">{popup.details}</div>
-                        {popup.frequency && (
-                            <p style={{ marginTop: 8 }}><strong>Frequency:</strong> {popup.frequency}</p>
-                        )}
                         {popup.completedDates && popup.completedDates.length > 0 && (
                             <div style={{ marginTop: 12 }}>
                                 <strong>Times completed:</strong>
