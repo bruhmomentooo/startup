@@ -8,11 +8,12 @@ import { Login } from './login/login';
 import { About } from './about/about';
 
 export default function App() {
-    // current logged-in user (simple string email). persisted to localStorage as 'currentUser'
-    const [userName, setUserName] = useState(() => {
-        try {
-            return localStorage.getItem('currentUser') || '';
-        } catch (e) { return ''; }
+    // API base: when developing with Vite (different port), point to backend on 4000
+    const API_BASE = (typeof window !== 'undefined' && window.location.hostname === 'localhost' && window.location.port !== '4000') ? 'http://localhost:4000' : '';
+
+    // current logged-in user object { id, username }. persisted to localStorage as 'currentUser'
+    const [user, setUser] = useState(() => {
+        try { return JSON.parse(localStorage.getItem('currentUser') || 'null'); } catch (e) { return null; }
     });
 
     const [navOpen, setNavOpen] = useState(false);
@@ -20,34 +21,67 @@ export default function App() {
     const toggleNav = () => setNavOpen(o => !o);
     const closeNav = () => setNavOpen(false);
 
-    // persist current user
+    // persist current user (object)
     useEffect(() => {
-        try { if (userName) localStorage.setItem('currentUser', userName); else localStorage.removeItem('currentUser'); } catch (e) {}
-    }, [userName]);
+        try { if (user) localStorage.setItem('currentUser', JSON.stringify(user)); else localStorage.removeItem('currentUser'); } catch (e) {}
+    }, [user]);
 
-    // Simple auth handler: login or create account. We store a minimal users map in localStorage under 'users'
-    function handleAuth(email, password, create = false) {
+    // Async auth handler: call backend users API for register/login
+    async function handleAuth(email, password, create = false) {
         if (!email) return { success: false, message: 'Email required' };
-        // load users
-        let users = {};
-        try { users = JSON.parse(localStorage.getItem('users') || '{}'); } catch (e) { users = {}; }
-        if (create) {
-            if (users[email]) return { success: false, message: 'Account already exists' };
-            users[email] = { password };
-            try { localStorage.setItem('users', JSON.stringify(users)); } catch (e) {}
-            setUserName(email);
-            return { success: true };
+        try {
+            if (create) {
+                const res = await fetch(`${API_BASE}/api/users`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ username: email, password })
+                });
+                if (!res.ok) return { success: false, message: await res.text() };
+                const data = await res.json();
+                setUser({ id: data.id, username: data.username });
+                return { success: true };
+            } else {
+                const res = await fetch(`${API_BASE}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ username: email, password })
+                });
+                if (!res.ok) return { success: false, message: await res.text() };
+                const data = await res.json();
+                setUser({ id: data.id, username: data.username });
+                return { success: true };
+            }
+        } catch (err) {
+            console.error('Auth error', err);
+            return { success: false, message: err && err.message ? err.message : 'Network error' };
         }
-        // login
-        if (!users[email]) return { success: false, message: 'No account found' };
-        if (users[email].password !== password) return { success: false, message: 'Invalid password' };
-        setUserName(email);
-        return { success: true };
     }
 
     function handleLogout() {
-        setUserName('');
+        // call logout endpoint to destroy session
+        try {
+            fetch(`${API_BASE}/api/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
+        } catch (e) {}
+        setUser(null);
     }
+
+    // Sync with server session on mount
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
+                if (!mounted) return;
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) setUser({ id: data.id, username: data.username });
+                }
+            } catch (e) { /* ignore */ }
+        })();
+        return () => { mounted = false; };
+    }, []);
 
     return (
         <BrowserRouter>
@@ -73,7 +107,7 @@ export default function App() {
                             <div className={`collapse navbar-collapse ${navOpen ? 'show' : ''}`} id="navbarNav">
                                 <ul className="navbar-nav ms-auto" onClick={closeNav}>
                                     <li className="nav-item">
-                                        {userName ? (
+                                        {user && user.username ? (
                                             <NavLink className="nav-link" to="/home">Home</NavLink>
                                         ) : (
                                             <span className="nav-link disabled" aria-disabled="true">Home</span>
@@ -83,7 +117,7 @@ export default function App() {
                                         <NavLink className="nav-link" to="/about">About</NavLink>
                                     </li>
                                     <li className="nav-item">
-                                        {userName ? (
+                                        {user && user.username ? (
                                             <NavLink className="nav-link" to="/" onClick={() => { handleLogout(); }}>
                                                 Logout
                                             </NavLink>
@@ -99,8 +133,8 @@ export default function App() {
 
                 <Routes>
                     <Route path="/" element={<Login onAuthChange={handleAuth} />} exact />
-                    <Route path="/home" element={userName ? <Home userName={userName} /> : <Navigate to="/" replace />} />
-                    <Route path="/about" element={<About userName={userName} />} />
+                    <Route path="/home" element={user ? <Home user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="/about" element={<About userName={user ? user.username : ''} />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>
 
