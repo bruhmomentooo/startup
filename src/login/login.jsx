@@ -9,13 +9,16 @@ export function Login({ onAuthChange }) {
 
     async function doAuth(create = false) {
         setError('');
-        const res = onAuthChange && onAuthChange(email.trim(), password, create);
-        // onAuthChange returns a simple object { success, message }
-        if (res && res.success) {
-            // go to home
-            navigate('/home');
-        } else {
-            setError(res && res.message ? res.message : 'Authentication failed');
+        if (!onAuthChange) return setError('No auth handler');
+        try {
+            const res = await onAuthChange(email.trim(), password, create);
+            if (res && res.success) {
+                navigate('/home');
+            } else {
+                setError(res && res.message ? res.message : 'Authentication failed');
+            }
+        } catch (err) {
+            setError(err && err.message ? err.message : 'Authentication error');
         }
     }
 
