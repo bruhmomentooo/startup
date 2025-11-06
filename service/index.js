@@ -43,12 +43,14 @@ app.use((req, res, next) => {
 	// Photo search proxy to hide API key from the client
 	app.post('/api/photo-search', async (req, res) => {
 		const { query = 'workspace', perPage = 8 } = req.body || {};
+		console.log(`[photo-search] request from=${req.ip} query=${query} perPage=${perPage}`);
 		const key = process.env.UNSPLASH_KEY;
 		if (!key) return res.status(500).json({ error: 'server missing UNSPLASH_KEY' });
 		try {
 			const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=${Number(perPage) || 8}`;
 			const upstream = await fetch(url, { headers: { Authorization: `Client-ID ${key}` } });
 			const data = await upstream.json();
+			console.log(`[photo-search] upstream status=${upstream.status} results=${(data && data.results && data.results.length) || 0}`);
 			return res.json(data);
 		} catch (err) {
 			console.error('photo search proxy error', err);
