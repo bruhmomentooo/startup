@@ -12,11 +12,13 @@ export function AboutPhotos({ query = 'workspace', perPage = 8 }) {
       setLoading(true);
       setError(null);
       try {
-        const key = import.meta.env.VITE_UNSPLASH_KEY;
-        if (!key) throw new Error('Missing VITE_UNSPLASH_KEY environment variable');
-        const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=${perPage}`;
-        const res = await fetch(url, { headers: { Authorization: `Client-ID ${key}` } });
-        if (!res.ok) throw new Error(`Unsplash error ${res.status}`);
+        // Call server-side proxy to hide API key
+        const res = await fetch('/api/photo-search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, perPage })
+        });
+        if (!res.ok) throw new Error(`Photo proxy error ${res.status}`);
         const data = await res.json();
         if (!cancelled) setPhotos(data.results || []);
       } catch (err) {
@@ -31,7 +33,6 @@ export function AboutPhotos({ query = 'workspace', perPage = 8 }) {
 
   return (
     <section className="about-photos">
-      <h3>Photos</h3>
       {loading && <div className="about-photos__loading">Loading photos…</div>}
       {error && <div className="about-photos__error">{error}</div>}
       <div className="about-photos__grid">

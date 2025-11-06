@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+// Load .env in service folder for server-only secrets
+try { require('dotenv').config({ path: path.join(__dirname, '.env') }); } catch (e) { /* ignore if dotenv not installed */ }
 const session = require('express-session');
 
 const port = process.env.PORT || (process.argv.length > 2 ? Number(process.argv[2]) : 4000);
@@ -36,6 +38,22 @@ app.use((req, res, next) => {
 			sameSite: 'lax',
 		}
 	}));
+
+	// Photo search proxy to hide API key from the client
+	app.post('/api/photo-search', async (req, res) => {
+		const { query = 'workspace', perPage = 8 } = req.body || {};
+		const key = process.env.UNSPLASH_KEY;
+		if (!key) return res.status(500).json({ error: 'server missing UNSPLASH_KEY' });
+		try {
+			const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=${Number(perPage) || 8}`;
+			const upstream = await fetch(url, { headers: { Authorization: `Client-ID ${key}` } });
+			const data = await upstream.json();
+			return res.json(data);
+		} catch (err) {
+			console.error('photo search proxy error', err);
+			return res.status(500).json({ error: String(err) });
+		}
+	});
 
 // Serve static frontend files from the parent folder (project root `startup`)
 const staticRoot = path.join(__dirname, '..');

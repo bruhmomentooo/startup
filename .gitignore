@@ -20,3 +20,4 @@ service/data/
 # Environment files
 .env
 .env.*
+service/.env
