@@ -1,4 +1,5 @@
 import React from 'react';
+import { AboutPhotos } from './aboutPhotos';
 
 export function About() {
     return (
@@ -42,6 +43,8 @@ export function About() {
                 </p>
 
                 <p style={{ fontStyle: 'italic', marginTop: 8 }}>Happy tracking — small steps, big results.</p>
+
+                <AboutPhotos query="workspace" perPage={8} />
             </div>
         </main>
     );

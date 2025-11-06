@@ -16,3 +16,7 @@ dbConfig.json
 
 # Ignore runtime data created by the local service
 service/data/
+
+# Environment files
+.env
+.env.*
