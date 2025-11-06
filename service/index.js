@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 // Load .env in service folder for server-only secrets
 try { require('dotenv').config({ path: path.join(__dirname, '.env') }); } catch (e) { /* ignore if dotenv not installed */ }
 const session = require('express-session');
+const fs = require('fs');
 
 const port = process.env.PORT || (process.argv.length > 2 ? Number(process.argv[2]) : 4000);
 
@@ -55,15 +56,30 @@ app.use((req, res, next) => {
 		}
 	});
 
-// Serve static frontend files from the parent folder (project root `startup`)
-const staticRoot = path.join(__dirname, '..');
-// serve files and let the client-side router handle routing; set index to index.html
+// Serve static frontend files. Detect build output location so deployment can place files
+// in different locations (dist, public, or parent folder).
+// Allow explicit override via env (useful in deployments)
+const envRoot = process.env.STATIC_ROOT;
+const possibleRoots = [
+	path.join(__dirname, '..', 'dist'),
+	path.join(__dirname, '..', 'public'),
+	path.join(__dirname, '..'),
+	path.join(__dirname, '..', 'startup', 'dist'),
+	path.join(__dirname, '..', 'startup', 'public')
+];
+let staticRoot = null;
+if (envRoot && fs.existsSync(path.join(envRoot, 'index.html'))) staticRoot = envRoot;
+else staticRoot = possibleRoots.find(p => fs.existsSync(path.join(p, 'index.html')));
+if (!staticRoot) {
+	// Fallback to parent folder (may still fail later when sendFile is used)
+	staticRoot = path.join(__dirname, '..');
+	console.warn('Warning: no index.html found in expected static locations. Serving', staticRoot);
+}
 app.use(express.static(staticRoot, { index: 'index.html' }));
 
 // Simple health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
-const fs = require('fs');
 const dataDir = path.join(__dirname, 'data');
 const tasksFile = path.join(dataDir, 'tasks.json');
 const usersFile = path.join(dataDir, 'users.json');
