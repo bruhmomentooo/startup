@@ -112,7 +112,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Static middleware for frontend** - There are multiple functions that allow requests and that hold all the necessary code needed for the server.
 - [ ] **Calls to third party endpoints** - I partially completed this part, but unfortunately I struggled to actually get my third party image api to work outside of my development machine.
 - [x] **Backend service endpoints** - There are place holders for my future DB calls that will be modified later.
-- [x] **Frontend calls service endpoints** - The users and their tasks are called along with
+- [x] **Frontend calls service endpoints** - The users and their tasks are called and fully mocked out. The api also has a service endpoint, but currently does not work.
 - [x] **Supports registration, login, logout, and restricted endpoint** - The app manages user information and makes sure only authenticated users may enter.
 
 
