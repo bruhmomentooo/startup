@@ -3,6 +3,29 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 // Load .env in service folder for server-only secrets
 try { require('dotenv').config({ path: path.join(__dirname, '.env') }); } catch (e) { /* ignore if dotenv not installed */ }
+// If no UNSPLASH_KEY in environment, allow an on-disk program file to contain the key.
+// This lets you place the secret directly in the deployed service folder as a small
+// `secret.js` or `secret.json` file without using a `.env` file. The file should
+// live next to this index.js (services/<your-service>/secret.json or secret.js).
+try {
+	if (!process.env.UNSPLASH_KEY) {
+		const secretJs = path.join(__dirname, 'secret.js');
+		const secretJson = path.join(__dirname, 'secret.json');
+		if (fs.existsSync(secretJs)) {
+			try {
+				// secret.js should export an object like: module.exports = { UNSPLASH_KEY: 'xxx' };
+				const s = require(secretJs);
+				if (s && s.UNSPLASH_KEY) process.env.UNSPLASH_KEY = s.UNSPLASH_KEY;
+			} catch (e) { /* ignore parse/require errors */ }
+		} else if (fs.existsSync(secretJson)) {
+			try {
+				const raw = fs.readFileSync(secretJson, 'utf8');
+				const s = JSON.parse(raw || '{}');
+				if (s && s.UNSPLASH_KEY) process.env.UNSPLASH_KEY = s.UNSPLASH_KEY;
+			} catch (e) { /* ignore parse errors */ }
+		}
+	}
+} catch (e) { /* non-fatal */ }
 const session = require('express-session');
 const fs = require('fs');
 
