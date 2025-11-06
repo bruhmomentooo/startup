@@ -1,10 +1,57 @@
-import React from 'react';
-import { AboutPhotos } from './aboutPhotos';
+import React, { useEffect, useState } from 'react';
 
 export function About() {
+    const [bgUrl, setBgUrl] = useState(null);
+
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const res = await fetch('/api/photo-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: 'workspace', perPage: 1 }) });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (cancelled) return;
+                const photo = data && data.results && data.results[0];
+                if (photo && photo.urls && photo.urls.regular) setBgUrl(photo.urls.regular);
+            } catch (e) { /* ignore */ }
+        })();
+        return () => { cancelled = true; };
+    }, []);
+
+    // Apply full-bleed background to the document body when bgUrl is available
+    useEffect(() => {
+        if (!bgUrl) return;
+        const prev = {
+            backgroundImage: document.body.style.backgroundImage,
+            backgroundSize: document.body.style.backgroundSize,
+            backgroundPosition: document.body.style.backgroundPosition,
+            backgroundRepeat: document.body.style.backgroundRepeat,
+            backgroundAttachment: document.body.style.backgroundAttachment
+        };
+        const overlay = 'linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35))';
+        document.body.style.backgroundImage = `${overlay}, url(${bgUrl})`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundAttachment = 'fixed';
+        // ensure body occupies full viewport
+        document.documentElement.style.minHeight = '100%';
+        document.body.style.minHeight = '100vh';
+        return () => {
+            document.body.style.backgroundImage = prev.backgroundImage || '';
+            document.body.style.backgroundSize = prev.backgroundSize || '';
+            document.body.style.backgroundPosition = prev.backgroundPosition || '';
+            document.body.style.backgroundRepeat = prev.backgroundRepeat || '';
+            document.body.style.backgroundAttachment = prev.backgroundAttachment || '';
+        };
+    }, [bgUrl]);
+
+    const mainStyle = { padding: 20 };
+    const containerStyle = { maxWidth: 900, margin: '0 auto', background: 'rgba(255,255,255,0.92)', borderRadius: 8, padding: 28 };
+
     return (
-        <main style={{ padding: 20 }}>
-            <div className="task_container" style={{ maxWidth: 900, margin: '0 auto' }}>
+        <main style={mainStyle}>
+            <div className="task_container" style={containerStyle}>
                 <h1>About Task Tracker</h1>
 
                 <p style={{ lineHeight: 1.6 }}>
@@ -44,8 +91,8 @@ export function About() {
 
                 <p style={{ fontStyle: 'italic', marginTop: 8 }}>Happy tracking — small steps, big results.</p>
 
-                <AboutPhotos query="workspace" perPage={8} />
             </div>
         </main>
     );
 }
+export default About;
