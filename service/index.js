@@ -133,17 +133,21 @@ app.get('/api/users', async (req, res) => {
 app.post('/api/users', async (req, res) => {
 	const { username, password } = req.body || {};
 	if (!username || !password) return res.status(400).json({ error: 'username and password required' });
-	if (users.find(u => u.username === username)) return res.status(409).json({ error: 'user exists' });
-	const id = uuidv4();
-	const passwordHash = bcrypt.hashSync(password, 10);
-	const user = { id, username, passwordHash, createdAt: new Date().toISOString() };
-	users.push(user);
-	await saveUsers();
-	// Auto-login after registration by setting session
 	try {
-		if (req.session) req.session.userId = user.id;
-	} catch (e) { console.error('Failed to set session during register', e); }
-	res.status(201).json({ id: user.id, username: user.username, createdAt: user.createdAt });
+		if (!usersCol) return res.status(503).json({ error: 'database not configured' });
+		const existing = await usersCol.findOne({ username });
+		if (existing) return res.status(409).json({ error: 'user exists' });
+		const passwordHash = bcrypt.hashSync(password, 10);
+		const now = new Date().toISOString();
+		const result = await usersCol.insertOne({ username, passwordHash, createdAt: now });
+		const id = String(result.insertedId);
+		// Auto-login after registration by setting session
+		try { if (req.session) req.session.userId = id; } catch (e) { console.error('Failed to set session during register', e); }
+		return res.status(201).json({ id, username, createdAt: now });
+	} catch (err) {
+		console.error('POST /api/users error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // Login (simple check against stored users) - returns user info on success
