@@ -117,8 +117,16 @@ const { v4: uuidv4 } = require('uuid');
 const { ObjectId } = require('mongodb');
 
 // List users (sanitized)
-app.get('/api/users', (req, res) => {
-	res.json(users.map(u => ({ id: u.id, username: u.username, createdAt: u.createdAt })));
+app.get('/api/users', async (req, res) => {
+	try {
+		if (!usersCol) return res.json([]);
+		const docs = await usersCol.find({}, { projection: { passwordHash: 0 } }).toArray();
+		const out = docs.map(u => ({ id: String(u._id), username: u.username, createdAt: u.createdAt }));
+		return res.json(out);
+	} catch (err) {
+		console.error('GET /api/users error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // Create user
