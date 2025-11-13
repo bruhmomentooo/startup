@@ -272,23 +272,29 @@ app.get('/api/tasks', requireAuth, async (req, res) => {
 });
 
 // Create a task for the logged-in user
-app.post('/api/tasks', requireAuth, (req, res) => {
+app.post('/api/tasks', requireAuth, async (req, res) => {
 	const { title, details, recurring, frequency } = req.body || {};
 	if (!title || typeof title !== 'string' || !title.trim()) return res.status(400).json({ error: 'title required' });
-	const uid = req.session.userId;
-	const t = {
-		id: `t-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
-		title: title.trim(),
-		details: (details || '').toString(),
-		recurring: !!recurring,
-		frequency: recurring ? (frequency || 'Every Day') : '',
-		ownerId: uid,
-		createdAt: new Date().toISOString(),
-		completedDates: []
-	};
-	tasks.push(t);
-	saveTasks().catch(err => console.error('Failed to save tasks after create', err));
-	res.status(201).json(t);
+	try {
+		if (!tasksCol) return res.status(503).json({ error: 'database not configured' });
+		const uid = req.session.userId;
+		const doc = {
+			title: title.trim(),
+			details: (details || '').toString(),
+			recurring: !!recurring,
+			frequency: recurring ? (frequency || 'Every Day') : '',
+			ownerId: uid,
+			createdAt: new Date().toISOString(),
+			completedDates: []
+		};
+		const result = await tasksCol.insertOne(doc);
+		const inserted = await tasksCol.findOne({ _id: result.insertedId });
+		const out = { id: String(inserted._id), title: inserted.title, details: inserted.details, recurring: !!inserted.recurring, frequency: inserted.frequency || '', ownerId: inserted.ownerId, createdAt: inserted.createdAt, completedDates: inserted.completedDates || [] };
+		return res.status(201).json(out);
+	} catch (err) {
+		console.error('POST /api/tasks error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // List tasks for a specific user
