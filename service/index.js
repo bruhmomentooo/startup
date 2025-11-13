@@ -197,11 +197,17 @@ app.get('/api/me', async (req, res) => {
 });
 
 // Get user by id (sanitized)
-app.get('/api/users/:id', (req, res) => {
+app.get('/api/users/:id', async (req, res) => {
 	const id = req.params.id;
-	const u = users.find(x => x.id === id);
-	if (!u) return res.status(404).json({ error: 'not found' });
-	res.json({ id: u.id, username: u.username, createdAt: u.createdAt });
+	try {
+		if (!usersCol) return res.status(404).json({ error: 'not found' });
+		const u = await usersCol.findOne({ _id: new ObjectId(id) });
+		if (!u) return res.status(404).json({ error: 'not found' });
+		return res.json({ id: String(u._id), username: u.username, createdAt: u.createdAt });
+	} catch (err) {
+		console.error('GET /api/users/:id error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // Update user (username or password)
