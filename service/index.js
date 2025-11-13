@@ -299,13 +299,20 @@ app.post('/api/tasks', requireAuth, async (req, res) => {
 
 // List tasks for a specific user
 // List tasks for a specific user (only allowed for that user)
-app.get('/api/users/:id/tasks', requireAuth, (req, res) => {
+app.get('/api/users/:id/tasks', requireAuth, async (req, res) => {
 	const uid = req.params.id;
 	if (req.session.userId !== uid) return res.status(403).json({ error: 'forbidden' });
-	const user = users.find(u => u.id === uid);
-	if (!user) return res.status(404).json({ error: 'user not found' });
-	const userTasks = tasks.filter(t => t.ownerId === uid);
-	res.json(userTasks);
+	try {
+		if (!tasksCol || !usersCol) return res.status(503).json({ error: 'database not configured' });
+		const user = await usersCol.findOne({ _id: new ObjectId(uid) });
+		if (!user) return res.status(404).json({ error: 'user not found' });
+		const docs = await tasksCol.find({ ownerId: uid }).toArray();
+		const out = docs.map(t => ({ id: String(t._id), title: t.title, details: t.details, recurring: !!t.recurring, frequency: t.frequency || '', ownerId: t.ownerId, createdAt: t.createdAt, completedDates: t.completedDates || [], updatedAt: t.updatedAt }));
+		return res.json(out);
+	} catch (err) {
+		console.error('GET /api/users/:id/tasks error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // Get single task
