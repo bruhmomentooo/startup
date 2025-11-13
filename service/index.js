@@ -211,18 +211,28 @@ app.get('/api/users/:id', async (req, res) => {
 });
 
 // Update user (username or password)
-app.put('/api/users/:id', (req, res) => {
+app.put('/api/users/:id', async (req, res) => {
 	const id = req.params.id;
-	const idx = users.findIndex(x => x.id === id);
-	if (idx === -1) return res.status(404).json({ error: 'not found' });
 	const { username, password } = req.body || {};
-	if (username && users.some((u, i) => u.username === username && i !== idx)) return res.status(409).json({ error: 'username taken' });
-	if (typeof username === 'string') users[idx].username = username;
-	if (typeof password === 'string' && password.length > 0) users[idx].passwordHash = bcrypt.hashSync(password, 10);
-	users[idx].updatedAt = new Date().toISOString();
-	const u = users[idx];
-	saveUsers().catch(err => console.error('Failed to save users after update', err));
-	res.json({ id: u.id, username: u.username, createdAt: u.createdAt, updatedAt: u.updatedAt });
+	try {
+		if (!usersCol) return res.status(503).json({ error: 'database not configured' });
+		const existing = await usersCol.findOne({ _id: new ObjectId(id) });
+		if (!existing) return res.status(404).json({ error: 'not found' });
+		if (username && username !== existing.username) {
+			const conflict = await usersCol.findOne({ username });
+			if (conflict) return res.status(409).json({ error: 'username taken' });
+		}
+		const update = {};
+		if (typeof username === 'string') update.username = username;
+		if (typeof password === 'string' && password.length > 0) update.passwordHash = bcrypt.hashSync(password, 10);
+		update.updatedAt = new Date().toISOString();
+		await usersCol.updateOne({ _id: new ObjectId(id) }, { $set: update });
+		const u = await usersCol.findOne({ _id: new ObjectId(id) });
+		return res.json({ id: String(u._id), username: u.username, createdAt: u.createdAt, updatedAt: u.updatedAt });
+	} catch (err) {
+		console.error('PUT /api/users/:id error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // Delete user
