@@ -182,12 +182,18 @@ app.post('/api/logout', (req, res) => {
 });
 
 // Current session user
-app.get('/api/me', (req, res) => {
+app.get('/api/me', async (req, res) => {
 	const uid = req.session && req.session.userId;
 	if (!uid) return res.status(200).json(null);
-	const u = users.find(x => x.id === uid);
-	if (!u) return res.status(200).json(null);
-	res.json({ id: u.id, username: u.username });
+	try {
+		if (!usersCol) return res.status(200).json(null);
+		const u = await usersCol.findOne({ _id: new ObjectId(uid) });
+		if (!u) return res.status(200).json(null);
+		return res.json({ id: String(u._id), username: u.username });
+	} catch (err) {
+		console.error('GET /api/me error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // Get user by id (sanitized)
