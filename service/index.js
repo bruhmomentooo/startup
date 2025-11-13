@@ -379,6 +379,23 @@ app.use((req, res, next) => {
 	res.sendFile(path.join(staticRoot, 'index.html'));
 });
 
-app.listen(port, () => console.log(`Service listening on http://localhost:${port}`));
+async function start() {
+	try {
+		const database = await connectDB();
+		if (database) {
+			db = database;
+			usersCol = db.collection('users');
+			tasksCol = db.collection('tasks');
+			console.log('Connected to MongoDB, using collections users and tasks');
+		} else {
+			console.warn('No MongoDB configured; running with in-memory or no persistence');
+		}
+	} catch (err) {
+		console.error('Failed to connect to database', err);
+	}
+	app.listen(port, () => console.log(`Service listening on http://localhost:${port}`));
+}
+
+start();
 
 module.exports = app;
