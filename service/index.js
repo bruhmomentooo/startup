@@ -356,15 +356,19 @@ app.put('/api/tasks/:id', async (req, res) => {
 });
 
 // Delete task
-app.delete('/api/tasks/:id', (req, res) => {
+app.delete('/api/tasks/:id', async (req, res) => {
 	const id = req.params.id;
-	const idx = tasks.findIndex(x => x.id === id);
-	if (idx === -1) return res.status(404).json({ error: 'not found' });
-	const existing = tasks[idx];
-	if (!req.session || req.session.userId !== existing.ownerId) return res.status(403).json({ error: 'forbidden' });
-	const removed = tasks.splice(idx, 1)[0];
-	saveTasks().catch(err => console.error('Failed to save tasks after delete', err));
-	res.json(removed);
+	try {
+		if (!tasksCol) return res.status(503).json({ error: 'database not configured' });
+		const existing = await tasksCol.findOne({ _id: new ObjectId(id) });
+		if (!existing) return res.status(404).json({ error: 'not found' });
+		if (!req.session || req.session.userId !== existing.ownerId) return res.status(403).json({ error: 'forbidden' });
+		await tasksCol.deleteOne({ _id: new ObjectId(id) });
+		return res.json({ id: id });
+	} catch (err) {
+		console.error('DELETE /api/tasks/:id error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // For SPA client-side routing: return index.html for unknown GET routes (except /api)
