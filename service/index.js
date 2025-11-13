@@ -330,23 +330,29 @@ app.get('/api/tasks/:id', async (req, res) => {
 });
 
 // Update task (partial updates allowed)
-app.put('/api/tasks/:id', (req, res) => {
+app.put('/api/tasks/:id', async (req, res) => {
 	const id = req.params.id;
-	const idx = tasks.findIndex(x => x.id === id);
-	if (idx === -1) return res.status(404).json({ error: 'not found' });
 	const { title, details, recurring, frequency, completedDates } = req.body || {};
-	const existing = tasks[idx];
-	// Only owner can modify
-	if (!req.session || req.session.userId !== existing.ownerId) return res.status(403).json({ error: 'forbidden' });
-	if (typeof title === 'string' && title.trim()) existing.title = title.trim();
-	if (typeof details === 'string') existing.details = details;
-	if (typeof recurring === 'boolean') existing.recurring = recurring;
-	if (typeof frequency === 'string') existing.frequency = frequency;
-	if (Array.isArray(completedDates)) existing.completedDates = completedDates;
-	existing.updatedAt = new Date().toISOString();
-	tasks[idx] = existing;
-	saveTasks().catch(err => console.error('Failed to save tasks after update', err));
-	res.json(existing);
+	try {
+		if (!tasksCol) return res.status(503).json({ error: 'database not configured' });
+		const existing = await tasksCol.findOne({ _id: new ObjectId(id) });
+		if (!existing) return res.status(404).json({ error: 'not found' });
+		// Only owner can modify
+		if (!req.session || req.session.userId !== existing.ownerId) return res.status(403).json({ error: 'forbidden' });
+		const update = {};
+		if (typeof title === 'string' && title.trim()) update.title = title.trim();
+		if (typeof details === 'string') update.details = details;
+		if (typeof recurring === 'boolean') update.recurring = recurring;
+		if (typeof frequency === 'string') update.frequency = frequency;
+		if (Array.isArray(completedDates)) update.completedDates = completedDates;
+		update.updatedAt = new Date().toISOString();
+		await tasksCol.updateOne({ _id: new ObjectId(id) }, { $set: update });
+		const t = await tasksCol.findOne({ _id: new ObjectId(id) });
+		return res.json({ id: String(t._id), title: t.title, details: t.details, recurring: !!t.recurring, frequency: t.frequency || '', ownerId: t.ownerId, createdAt: t.createdAt, completedDates: t.completedDates || [], updatedAt: t.updatedAt });
+	} catch (err) {
+		console.error('PUT /api/tasks/:id error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // Delete task
