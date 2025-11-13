@@ -108,12 +108,12 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
-- [ ] **Static middleware for frontend** - I did not complete this part of the deliverable.
-- [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
-- [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
+- [x] **Node.js/Express HTTP service** - Ut uses Node.js and Express to serve up the frontend and backend elements of my webpage.
+- [x] **Static middleware for frontend** - There are multiple functions that allow requests and that hold all the necessary code needed for the server.
+- [ ] **Calls to third party endpoints** - I partially completed this part, but unfortunately I struggled to actually get my third party image api to work outside of my development machine.
+- [x] **Backend service endpoints** - There are place holders for my future DB calls that will be modified later.
+- [x] **Frontend calls service endpoints** - The users and their tasks are called and fully mocked out. The api also has a service endpoint, but currently does not work.
+- [x] **Supports registration, login, logout, and restricted endpoint** - The app manages user information and makes sure only authenticated users may enter.
 
 
 ## 🚀 DB deliverable
