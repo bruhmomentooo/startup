@@ -28,6 +28,8 @@ try {
 } catch (e) { /* non-fatal */ }
 const session = require('express-session');
 const fs = require('fs');
+// Database helper (connects to MongoDB when available)
+const { connectDB } = require('./database');
 
 const port = process.env.PORT || (process.argv.length > 2 ? Number(process.argv[2]) : 4000);
 
@@ -105,54 +107,14 @@ app.use(express.static(staticRoot, { index: 'index.html' }));
 // Simple health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
-const dataDir = path.join(__dirname, 'data');
-const tasksFile = path.join(dataDir, 'tasks.json');
-const usersFile = path.join(dataDir, 'users.json');
-
-// Ensure data directory exists
-try { fs.mkdirSync(dataDir, { recursive: true }); } catch (e) { console.error('Failed to create data dir', e); }
-
-// Example API placeholder: load persisted tasks (file-backed)
-let tasks = [];
-try {
-	if (fs.existsSync(tasksFile)) {
-		const raw = fs.readFileSync(tasksFile, 'utf8');
-		tasks = JSON.parse(raw) || [];
-	}
-} catch (e) {
-	console.error('Failed to read tasks file, starting empty', e);
-	tasks = [];
-}
-
-async function saveTasks() {
-	try {
-		await fs.promises.writeFile(tasksFile, JSON.stringify(tasks, null, 2), 'utf8');
-	} catch (e) {
-		console.error('Failed to save tasks', e);
-	}
-}
-
-async function saveUsers() {
-	try {
-		await fs.promises.writeFile(usersFile, JSON.stringify(users, null, 2), 'utf8');
-	} catch (e) {
-		console.error('Failed to save users', e);
-	}
-}
-
-// Simple in-memory users placeholder (will become DB later)
-let users = [];
-try {
-	if (fs.existsSync(usersFile)) {
-		const raw = fs.readFileSync(usersFile, 'utf8');
-		users = JSON.parse(raw) || [];
-	}
-} catch (e) {
-	console.error('Failed to read users file, starting empty', e);
-	users = [];
-}
+// We'll connect to MongoDB if available and use collections for users/tasks.
+// If no DB is configured, the service will continue to run but persistence will be disabled.
+let db = null;
+let usersCol = null;
+let tasksCol = null;
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
+const { ObjectId } = require('mongodb');
 
 // List users (sanitized)
 app.get('/api/users', (req, res) => {
