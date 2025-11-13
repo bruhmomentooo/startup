@@ -316,11 +316,17 @@ app.get('/api/users/:id/tasks', requireAuth, async (req, res) => {
 });
 
 // Get single task
-app.get('/api/tasks/:id', (req, res) => {
+app.get('/api/tasks/:id', async (req, res) => {
 	const id = req.params.id;
-	const t = tasks.find(x => x.id === id);
-	if (!t) return res.status(404).json({ error: 'not found' });
-	res.json(t);
+	try {
+		if (!tasksCol) return res.status(404).json({ error: 'not found' });
+		const t = await tasksCol.findOne({ _id: new ObjectId(id) });
+		if (!t) return res.status(404).json({ error: 'not found' });
+		return res.json({ id: String(t._id), title: t.title, details: t.details, recurring: !!t.recurring, frequency: t.frequency || '', ownerId: t.ownerId, createdAt: t.createdAt, completedDates: t.completedDates || [] });
+	} catch (err) {
+		console.error('GET /api/tasks/:id error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // Update task (partial updates allowed)
