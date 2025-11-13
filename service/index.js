@@ -151,18 +151,22 @@ app.post('/api/users', async (req, res) => {
 });
 
 // Login (simple check against stored users) - returns user info on success
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
 	const { username, password } = req.body || {};
 	if (!username || !password) return res.status(400).json({ error: 'username and password required' });
-	const user = users.find(u => u.username === username);
-	if (!user) return res.status(400).json({ error: 'invalid credentials' });
-	const ok = bcrypt.compareSync(password, user.passwordHash);
-	if (!ok) return res.status(400).json({ error: 'invalid credentials' });
-	// Set session user id
 	try {
-		if (req.session) req.session.userId = user.id;
-	} catch (e) { console.error('Failed to set session during login', e); }
-	res.json({ id: user.id, username: user.username });
+		if (!usersCol) return res.status(503).json({ error: 'database not configured' });
+		const user = await usersCol.findOne({ username });
+		if (!user) return res.status(400).json({ error: 'invalid credentials' });
+		const ok = bcrypt.compareSync(password, user.passwordHash);
+		if (!ok) return res.status(400).json({ error: 'invalid credentials' });
+		// Set session user id
+		try { if (req.session) req.session.userId = String(user._id); } catch (e) { console.error('Failed to set session during login', e); }
+		return res.json({ id: String(user._id), username: user.username });
+	} catch (err) {
+		console.error('POST /api/login error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // Logout - destroy session
