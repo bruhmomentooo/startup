@@ -236,18 +236,19 @@ app.put('/api/users/:id', async (req, res) => {
 });
 
 // Delete user
-app.delete('/api/users/:id', (req, res) => {
+app.delete('/api/users/:id', async (req, res) => {
 	const id = req.params.id;
-	const idx = users.findIndex(x => x.id === id);
-	if (idx === -1) return res.status(404).json({ error: 'not found' });
-	const removed = users.splice(idx, 1)[0];
-	// remove tasks owned by this user
-	const before = tasks.length;
-	tasks = tasks.filter(t => t.ownerId !== id);
-	const removedTasks = before - tasks.length;
-	saveUsers().catch(err => console.error('Failed to save users after delete', err));
-	saveTasks().catch(err => console.error('Failed to save tasks after user delete', err));
-	res.json({ id: removed.id, username: removed.username, removedTasks });
+	try {
+		if (!usersCol || !tasksCol) return res.status(503).json({ error: 'database not configured' });
+		const u = await usersCol.findOne({ _id: new ObjectId(id) });
+		if (!u) return res.status(404).json({ error: 'not found' });
+		const del = await usersCol.deleteOne({ _id: new ObjectId(id) });
+		const removedTasksRes = await tasksCol.deleteMany({ ownerId: id });
+		return res.json({ id: id, username: u.username, removedTasks: removedTasksRes.deletedCount });
+	} catch (err) {
+		console.error('DELETE /api/users/:id error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // List all tasks
