@@ -258,10 +258,17 @@ function requireAuth(req, res, next) {
 }
 
 // List all tasks for the logged-in user
-app.get('/api/tasks', requireAuth, (req, res) => {
-	const uid = req.session.userId;
-	const userTasks = tasks.filter(t => t.ownerId === uid);
-	res.json(userTasks);
+app.get('/api/tasks', requireAuth, async (req, res) => {
+	try {
+		if (!tasksCol) return res.json([]);
+		const uid = req.session.userId;
+		const docs = await tasksCol.find({ ownerId: uid }).toArray();
+		const out = docs.map(t => ({ id: String(t._id), title: t.title, details: t.details, recurring: !!t.recurring, frequency: t.frequency || '', ownerId: t.ownerId, createdAt: t.createdAt, completedDates: t.completedDates || [], updatedAt: t.updatedAt }));
+		return res.json(out);
+	} catch (err) {
+		console.error('GET /api/tasks error', err);
+		return res.status(500).json({ error: 'server error' });
+	}
 });
 
 // Create a task for the logged-in user
