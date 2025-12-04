@@ -104,10 +104,11 @@ button:hover {
 }
 
 /* Notifications styles */
-.notifications-root { position: relative; display: inline-block; margin-left: 12px; }
+.notifications-root { position: relative; display: inline-block; margin-left: 12px; overflow: visible; }
 .notifications-button { position: relative; }
 .notif-badge { position: absolute; top: -6px; right: -6px; background: #dc3545; color: white; border-radius: 999px; padding: 2px 6px; font-size: 12px; }
-.notif-popup { position: absolute; right: 0; top: 44px; width: 320px; max-height: 420px; overflow: auto; background: white; border: 1px solid #ddd; box-shadow: 0 6px 18px rgba(0,0,0,0.12); border-radius: 6px; z-index: 2000; }
+/* Place popup to the right of the sidebar so it won't be clipped by the sidebar container */
+.notif-popup { position: absolute; left: calc(100% + 8px); top: 0; width: 320px; max-width: calc(100vw - 40px); max-height: 420px; overflow: auto; background: white; border: 1px solid #ddd; box-shadow: 0 8px 26px rgba(0,0,0,0.18); border-radius: 6px; z-index: 9999; }
 .notif-header { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid #eee; }
 .notif-list { max-height: 360px; overflow:auto; }
 .notif-item { padding:8px 12px; border-bottom:1px solid #f4f4f4; }
@@ -115,3 +116,15 @@ button:hover {
 .notif-time { font-size:11px; color:#666; }
 .notif-body { margin-top:4px; }
 .notif-empty { padding:12px; color:#666; }
+
+/* Mobile: when sidebar is an overlay, keep the popup inside the sidebar */
+@media (max-width: 768px) {
+    .sidebar .notifications-root .notif-popup {
+        left: auto;
+        right: 0;
+        top: 44px;
+        max-width: 100%;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+        z-index: 3000;
+    }
+}
