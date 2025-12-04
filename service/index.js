@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const fs = require('fs');
 // Load .env in service folder for server-only secrets
 try { require('dotenv').config({ path: path.join(__dirname, '.env') }); } catch (e) { /* ignore if dotenv not installed */ }
 // If no UNSPLASH_KEY in environment, allow an on-disk program file to contain the key.
@@ -27,9 +28,10 @@ try {
 	}
 } catch (e) { /* non-fatal */ }
 const session = require('express-session');
-const fs = require('fs');
 // Database helper (connects to MongoDB when available)
 const { connectDB } = require('./database');
+const http = require('http');
+const WebSocket = require('ws');
 
 const port = process.env.PORT || (process.argv.length > 2 ? Number(process.argv[2]) : 4000);
 
@@ -54,7 +56,8 @@ app.use((req, res, next) => {
 });
 
 	// Session middleware (development). In production, configure a proper store.
-	app.use(session({
+	// Keep the middleware instance so we can reuse it for WebSocket authentication.
+	const sessionParser = session({
 		secret: process.env.SESSION_SECRET || 'dev-secret-change-me',
 		resave: false,
 		saveUninitialized: false,
@@ -63,7 +66,8 @@ app.use((req, res, next) => {
 			secure: false,
 			sameSite: 'lax',
 		}
-	}));
+	});
+	app.use(sessionParser);
 
 	// Photo search proxy to hide API key from the client
 	app.post('/api/photo-search', async (req, res) => {
@@ -379,6 +383,51 @@ app.use((req, res, next) => {
 	res.sendFile(path.join(staticRoot, 'index.html'));
 });
 
+// Notification endpoints (simple): send a test notification to currently logged-in user
+app.post('/api/notify-test', requireAuth, (req, res) => {
+	const uid = req.session.userId;
+	const message = req.body && req.body.message ? String(req.body.message) : 'Test notification';
+	const sent = app.locals.sendNotification ? app.locals.sendNotification(uid, { message }) : 0;
+	res.json({ ok: true, sent });
+});
+
+// Admin/test route to notify arbitrary user id (must be authenticated). Use carefully.
+app.post('/api/notify/:userId', requireAuth, (req, res) => {
+	const target = req.params.userId;
+	const payload = req.body || { message: 'Server notification' };
+	const sent = app.locals.sendNotification ? app.locals.sendNotification(target, payload) : 0;
+	res.json({ ok: true, sent });
+});
+
+// WebSocket clients mapped by userId -> Set of ws
+const clientsByUser = new Map();
+
+function addClient(userId, ws) {
+	if (!clientsByUser.has(userId)) clientsByUser.set(userId, new Set());
+	clientsByUser.get(userId).add(ws);
+}
+
+function removeClient(userId, ws) {
+	if (!clientsByUser.has(userId)) return;
+	const s = clientsByUser.get(userId);
+	s.delete(ws);
+	if (s.size === 0) clientsByUser.delete(userId);
+}
+
+function sendNotification(userId, payload) {
+	const set = clientsByUser.get(userId);
+	if (!set) return 0;
+	const msg = JSON.stringify({ type: 'notification', payload, time: new Date().toISOString() });
+	let sent = 0;
+	for (const ws of set) {
+		if (ws.readyState === WebSocket.OPEN) {
+			ws.send(msg);
+			sent++;
+		}
+	}
+	return sent;
+}
+
 async function start() {
 	try {
 		const database = await connectDB();
@@ -393,7 +442,55 @@ async function start() {
 	} catch (err) {
 		console.error('Failed to connect to database', err);
 	}
-	app.listen(port, () => console.log(`Service listening on http://localhost:${port}`));
+	// Create an HTTP server and attach WebSocket server so WS shares same port
+	const server = http.createServer(app);
+
+	// Create a wss but we'll handle upgrade manually to attach session
+	const wss = new WebSocket.Server({ noServer: true });
+
+	server.on('upgrade', (request, socket, head) => {
+		// reuse the session parser to populate request.session
+		sessionParser(request, {}, () => {
+			const sess = request.session;
+			if (!sess || !sess.userId) {
+				socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+				socket.destroy();
+				return;
+			}
+			wss.handleUpgrade(request, socket, head, (ws) => {
+				wss.emit('connection', ws, request);
+			});
+		});
+	});
+
+	wss.on('connection', (ws, request) => {
+		const userId = request.session && request.session.userId;
+		if (!userId) {
+			ws.close();
+			return;
+		}
+		addClient(userId, ws);
+		console.log(`[ws] user connected userId=${userId} totalSockets=${clientsByUser.get(userId).size}`);
+
+		ws.on('message', (msg) => {
+			// simple protocol: expect JSON messages with { type, payload }
+			try {
+				const data = JSON.parse(msg.toString());
+				// support ping/pong or client requests here in future
+				if (data && data.type === 'ping') ws.send(JSON.stringify({ type: 'pong' }));
+			} catch (e) { /* ignore */ }
+		});
+
+		ws.on('close', () => {
+			removeClient(userId, ws);
+			console.log(`[ws] user disconnected userId=${userId}`);
+		});
+	});
+
+	// Expose helper on app for other modules or startup code
+	app.locals.sendNotification = sendNotification;
+
+	server.listen(port, () => console.log(`Service listening on http://localhost:${port}`));
 }
 
 start();
