@@ -490,6 +490,74 @@ async function start() {
 	// Expose helper on app for other modules or startup code
 	app.locals.sendNotification = sendNotification;
 
+	// Start scheduled notifier if DB is available
+	const CHECK_MIN = Number(process.env.NOTIFY_CHECK_INTERVAL_MIN) || 5;
+	const MIN_NOTIFY_GAP_MS = Number(process.env.NOTIFY_MIN_GAP_MS) || (24 * 60 * 60 * 1000); // default 24h
+
+	async function checkDueTasks() {
+		if (!tasksCol) return;
+		const now = new Date();
+
+		// 1) Recurring tasks
+		const recurring = await tasksCol.find({ recurring: true }).toArray();
+		for (const t of recurring) {
+			try {
+				const completed = Array.isArray(t.completedDates) && t.completedDates.length ? new Date(t.completedDates[t.completedDates.length - 1]) : new Date(t.createdAt || t._id.getTimestamp());
+				const lastNotified = t.lastNotifiedAt ? new Date(t.lastNotifiedAt) : null;
+				const freq = (t.frequency || '').toLowerCase();
+				let due = false;
+				if (freq.includes('day')) {
+					// due if not completed today
+					const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+					if (completed < today) due = true;
+				} else if (freq.includes('week')) {
+					const cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+					if (completed < cutoff) due = true;
+				} else if (freq.includes('month')) {
+					const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+					if (completed < cutoff) due = true;
+				} else {
+					// unknown frequency: default to daily
+					const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+					if (completed < today) due = true;
+				}
+				if (!due) continue;
+				if (lastNotified && (now.getTime() - lastNotified.getTime()) < MIN_NOTIFY_GAP_MS) continue;
+				// send notification
+				const sent = app.locals.sendNotification ? app.locals.sendNotification(t.ownerId, { type: 'task_due', taskId: String(t._id), title: t.title, message: `Task due: ${t.title}` }) : 0;
+				if (sent > 0) {
+					await tasksCol.updateOne({ _id: t._id }, { $set: { lastNotifiedAt: now.toISOString() } });
+					console.log(`[notify] sent ${sent} notifications for task ${t._id}`);
+				}
+			} catch (e) { console.error('checkDueTasks recurring error', e); }
+		}
+
+		// 2) Non-recurring tasks with dueDate
+		const dueTasks = await tasksCol.find({ dueDate: { $exists: true } }).toArray();
+		for (const t of dueTasks) {
+			try {
+				const dueDate = new Date(t.dueDate);
+				if (isNaN(dueDate.getTime())) continue;
+				const lastNotified = t.lastNotifiedAt ? new Date(t.lastNotifiedAt) : null;
+				// treat completedDates containing a date on/after dueDate as done
+				const done = Array.isArray(t.completedDates) && t.completedDates.some(d => new Date(d) >= dueDate);
+				if (done) continue;
+				if (dueDate <= now) {
+					if (lastNotified && (now.getTime() - lastNotified.getTime()) < MIN_NOTIFY_GAP_MS) continue;
+					const sent = app.locals.sendNotification ? app.locals.sendNotification(t.ownerId, { type: 'task_due', taskId: String(t._id), title: t.title, message: `Task due: ${t.title}` }) : 0;
+					if (sent > 0) {
+						await tasksCol.updateOne({ _id: t._id }, { $set: { lastNotifiedAt: now.toISOString() } });
+						console.log(`[notify] sent ${sent} notifications for due task ${t._id}`);
+					}
+				}
+			} catch (e) { console.error('checkDueTasks dueDate error', e); }
+		}
+	}
+
+	// Run initial check then schedule
+	try { await checkDueTasks(); } catch (e) { console.error('Initial checkDueTasks failed', e); }
+	setInterval(() => { checkDueTasks().catch(err => console.error('checkDueTasks interval error', err)); }, CHECK_MIN * 60 * 1000);
+
 	server.listen(port, () => console.log(`Service listening on http://localhost:${port}`));
 }
 
