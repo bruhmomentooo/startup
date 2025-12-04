@@ -127,8 +127,8 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Backend listens for WebSocket connection** - I did not complete this part of the deliverable.
-- [ ] **Frontend makes WebSocket connection** - I did not complete this part of the deliverable.
-- [ ] **Data sent over WebSocket connection** - I did not complete this part of the deliverable.
-- [ ] **WebSocket data displayed** - I did not complete this part of the deliverable.
-- [ ] **Application is fully functional** - I did not complete this part of the deliverable.
+- [x] **Backend listens for WebSocket connection** - The requests ping to the backend and listen for the notifications.
+- [x] **Frontend makes WebSocket connection** - Each recurring task sends a notification to the backend which in turn edits the notifications tab.
+- [x] **Data sent over WebSocket connection** - The date and time are sent over the WebSocket along with the specific task.
+- [x] **WebSocket data displayed** - There is a notification tab to show when a task is overdue.
+- [x] **Application is fully functional** - Should be fully functional and help users keep track of their tasks!
