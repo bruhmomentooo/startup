@@ -102,3 +102,16 @@ button:hover {
     padding: 10px;
     background-color: #EDEEEB;
 }
+
+/* Notifications styles */
+.notifications-root { position: relative; display: inline-block; margin-left: 12px; }
+.notifications-button { position: relative; }
+.notif-badge { position: absolute; top: -6px; right: -6px; background: #dc3545; color: white; border-radius: 999px; padding: 2px 6px; font-size: 12px; }
+.notif-popup { position: absolute; right: 0; top: 44px; width: 320px; max-height: 420px; overflow: auto; background: white; border: 1px solid #ddd; box-shadow: 0 6px 18px rgba(0,0,0,0.12); border-radius: 6px; z-index: 2000; }
+.notif-header { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid #eee; }
+.notif-list { max-height: 360px; overflow:auto; }
+.notif-item { padding:8px 12px; border-bottom:1px solid #f4f4f4; }
+.notif-item.unread { background:#f7f9fb; }
+.notif-time { font-size:11px; color:#666; }
+.notif-body { margin-top:4px; }
+.notif-empty { padding:12px; color:#666; }

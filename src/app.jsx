@@ -6,10 +6,14 @@ import { BrowserRouter, NavLink, Route, Routes, Navigate } from 'react-router-do
 import { Home } from './home/home';
 import { Login } from './login/login';
 import { About } from './about/about';
+// Notifications moved from navbar into Home page sidebar
 
 export default function App() {
-    // API base: when developing with Vite (different port), point to backend on 4000
-    const API_BASE = (typeof window !== 'undefined' && window.location.hostname === 'localhost' && window.location.port !== '4000') ? 'http://localhost:4000' : '';
+    // API base: use relative paths so Vite dev server proxy (configured in vite.config.js)
+    // forwards `/api` to the backend during development. This keeps requests same-origin
+    // so cookies/sessions work in the browser. In production the frontend and backend
+    // are served from the same origin so relative paths are correct as well.
+    const API_BASE = '';
 
     // current logged-in user object { id, username }. persisted to localStorage as 'currentUser'
     const [user, setUser] = useState(() => {
@@ -105,7 +109,8 @@ export default function App() {
                             </button>
 
                             <div className={`collapse navbar-collapse ${navOpen ? 'show' : ''}`} id="navbarNav">
-                                <ul className="navbar-nav ms-auto" onClick={closeNav}>
+                                    <ul className="navbar-nav ms-auto" onClick={closeNav}>
+                                        {/* Notifications moved into Home sidebar to appear under Create Task */}
                                     <li className="nav-item">
                                         {user && user.username ? (
                                             <NavLink className="nav-link" to="/home">Home</NavLink>
