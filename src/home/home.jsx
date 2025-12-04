@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './home-style.css';
 import './tasks_modal.css';
+import Notifications from '../notifications/Notifications';
 
 // API base: when developing with Vite (different port), point to backend on 4000
 const API_BASE = (typeof window !== 'undefined' && window.location.hostname === 'localhost' && window.location.port !== '4000') ? 'http://localhost:4000' : '';
@@ -202,10 +203,12 @@ useEffect(() => {
     <main>
         <div className="content">
             {/* Sidebar */}
-            <div id="siteSidebar" className="sidebar">
+                <div id="siteSidebar" className="sidebar">
                 <button type="button" onClick={() => setCreatePopup({ show: true, title: '', details: '', recurring: false })}>Create Task</button>
                 <button type="button" onClick={addToGoogleCalendar}>Add to Google Calendar</button>
-                <button type="button" onClick={manageNotifications}>Notifications</button>
+                <div style={{ marginTop: 8 }}>
+                    <Notifications user={user} />
+                </div>
             </div>
             {/* Recurring Task List */}
                 <div className="task_container" id="recurringTasks">
